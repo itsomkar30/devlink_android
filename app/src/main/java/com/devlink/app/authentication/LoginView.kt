@@ -1,7 +1,9 @@
 package com.devlink.app.authentication
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -27,10 +30,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -43,7 +46,8 @@ import com.devlink.app.ui.AppFonts
 @Composable
 fun LoginView() {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-    val cardHeight = screenHeight * 0.75f
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val cardHeight = screenHeight * 0.70f
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -55,7 +59,7 @@ fun LoginView() {
             contentAlignment = Alignment.TopCenter
 
         ) {
-            LottieAnimationLoop(R.raw.login_gradient, 450)
+            LottieAnimationLoop(R.raw.login_gradient, 500.dp)
         }
         // Background card
         Card(
@@ -70,14 +74,14 @@ fun LoginView() {
                 bottomStart = 0.dp,
                 bottomEnd = 0.dp
             ),
-            elevation = CardDefaults.cardElevation(8.dp),
+            elevation = CardDefaults.cardElevation(16.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.black_modified))
         ) {
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = cardHeight*0.25f, start = 12.dp, end = 12.dp),
+                    .padding(top = cardHeight * 0.25f, start = 16.dp, end = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 var email by rememberSaveable { mutableStateOf("") }
@@ -86,11 +90,13 @@ fun LoginView() {
                 Text(
                     text = "Start connecting with Devlink",
                     fontFamily = AppFonts.josefin_bold,
-                    fontSize =20.sp,
-                    color = Color.White
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(screenHeight*0.05f))
+                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
 
                 ModifiedTextField(
                     name = email, onNameChange = {
@@ -105,6 +111,29 @@ fun LoginView() {
                     },
                     label = "Password"
                 )
+
+                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Don't have an account?  ",
+                        fontFamily = AppFonts.josefin_bold,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Text(
+                        text = "Create account here",
+                        fontFamily = AppFonts.josefin_bold,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = colorResource(R.color.blue),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
             }
 
         }
@@ -112,18 +141,18 @@ fun LoginView() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = screenHeight * -0.20f)
+                .offset(y = screenHeight * -0.18f)
                 .zIndex(2f), // Ensures it's above all other elements
             contentAlignment = Alignment.Center
         ) {
-            LottieAnimationLoop(R.raw.login_animation, 375)
+            LottieAnimationLoop(R.raw.login_animation, screenWidth* 1.0f)
         }
     }
 }
 
 
 @Composable
-fun LottieAnimationLoop(fileName: Int = R.raw.login_animation, size: Int = 350) {
+fun LottieAnimationLoop(fileName: Int = R.raw.login_animation, size: Dp = 350.dp) {
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(fileName))
 
@@ -137,7 +166,7 @@ fun LottieAnimationLoop(fileName: Int = R.raw.login_animation, size: Int = 350) 
         composition = composition,
         progress = progress,
         modifier = Modifier
-            .size(size.dp)
+            .size(size)
     )
 }
 
@@ -169,10 +198,10 @@ fun ModifiedTextField(
         modifier = modifier
             .fillMaxWidth(),
         textStyle = TextStyle(
-            fontFamily = AppFonts.josefin,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
+            fontFamily = AppFonts.josefin_bold,
+            color = Color.White,
+            fontSize = MaterialTheme.typography.bodyLarge.fontSize
+
         )
 
     )

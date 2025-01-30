@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.devlink.app.authentication.LoginView
+import com.devlink.app.authentication.SignupView
 import com.devlink.app.ui.theme.DevlinkTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
             DevlinkTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column (Modifier.padding(innerPadding)){
-                        LoginView()
+                        SignupView()
                     }
                 }
             }
