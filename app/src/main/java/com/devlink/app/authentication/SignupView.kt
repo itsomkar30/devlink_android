@@ -34,11 +34,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.devlink.app.R
 import com.devlink.app.ui.AppFonts
 
 @Composable
-fun SignupView(modifier: Modifier = Modifier) {
+fun SignupView(
+    navController: NavController = rememberNavController(),
+    modifier: Modifier = Modifier
+) {
 
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -152,7 +157,8 @@ fun SignupView(modifier: Modifier = Modifier) {
                         println("Button clicked!")
                     },
                     modifier = Modifier
-                        .fillMaxWidth().height(screenHeight*0.06f)
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.06f)
                 )
 
 

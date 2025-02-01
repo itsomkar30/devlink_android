@@ -1,5 +1,6 @@
 package com.devlink.app.authentication
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,16 +36,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.devlink.app.R
+import com.devlink.app.Screen
 import com.devlink.app.ui.AppFonts
 
+
 @Composable
-fun LoginView() {
+fun LoginView(navController: NavController= rememberNavController()) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val cardHeight = screenHeight * 0.70f
@@ -102,19 +107,40 @@ fun LoginView() {
                     name = email, onNameChange = {
                         email = it
                     },
-                    label = "Email"
+                    label = "Email",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.06f)
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
                 ModifiedTextField(
                     name = password, onNameChange = {
                         password = it
                     },
-                    label = "Password"
+                    label = "Password",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.06f)
                 )
 
-                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                ModifiedButton(
+                    text = "Login",
+                    onButtonClick = {
+                        println("Button clicked!")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.06f)
+                )
+
+                Spacer(modifier = Modifier.height(screenHeight * 0.04f))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = "Don't have an account?  ",
                         fontFamily = AppFonts.josefin_bold,
@@ -130,7 +156,10 @@ fun LoginView() {
                         style = MaterialTheme.typography.titleSmall,
                         color = colorResource(R.color.blue),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickable {
+                            navController.navigate(Screen.signup_screen)
+                        }
                     )
                 }
 
@@ -145,7 +174,7 @@ fun LoginView() {
                 .zIndex(2f), // Ensures it's above all other elements
             contentAlignment = Alignment.Center
         ) {
-            LottieAnimationLoop(R.raw.login_animation, screenWidth* 1.0f)
+            LottieAnimationLoop(R.raw.login_animation, screenWidth * 1.0f)
         }
     }
 }
@@ -194,9 +223,10 @@ fun ModifiedTextField(
             unfocusedLabelColor = colorResource(R.color.white),
 
 
-            ), shape = RectangleShape, // Soft rounded edges
+            ), shape = RectangleShape,
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(0.dp),
         textStyle = TextStyle(
             fontFamily = AppFonts.josefin_bold,
             color = Color.White,
