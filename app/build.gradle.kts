@@ -64,6 +64,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
+    implementation ("androidx.compose.material:material:1.7.7")
 
     val nav_version = "2.8.6"
 
