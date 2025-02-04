@@ -1,6 +1,5 @@
 package com.devlink.app.ui
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,11 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,8 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.devlink.app.BottomBtnBar
 import com.devlink.app.BottomNavBar
 import com.devlink.app.R
 
@@ -78,18 +82,29 @@ fun HomeScreenView(
                 .background(colorResource(R.color.black_modified)), // Black background
             containerColor = colorResource(R.color.black_modified), // Ensure Scaffold background is black
             topBar = { TopBar(modifier = Modifier) },
-            bottomBar = { BottomNavBar() },
+            bottomBar = { BottomNavBar(modifier = Modifier.zIndex(3f)) },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = {}, modifier = Modifier.padding(end = 10.dp),
-                    backgroundColor = colorResource(R.color.blue),
-                    contentColor = colorResource(R.color.white)
+                    onClick = {},
+                    modifier = Modifier
+//                        .padding(
+//                            end = screenWidth * 0.06f,
+//                            bottom = screenHeight * 0.02f
+//                        )
+                        .size(screenWidth * 0.14f),
+                    shape = CircleShape,
+                    backgroundColor = colorResource(R.color.snap_yellow),
+                    contentColor = colorResource(R.color.black)
                 ) {
-                    Icon(imageVector = Icons.Rounded.Build, contentDescription = "AI Chatbot")
-
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = "Search",
+                        tint = Color.Black
+                    )
 
                 }
             },
+            floatingActionButtonPosition = FabPosition.Center,
             content = { paddingValues -> // Handles insets like status bar, nav bar
                 Box(
                     modifier = Modifier
@@ -102,7 +117,17 @@ fun HomeScreenView(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        DevListItem() // Your custom composable
+                        DevListItem()
+
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            BottomBtnBar()
+                        }
                     }
                 }
             }
@@ -118,7 +143,7 @@ fun DevListItem() {
     Column(
         modifier = Modifier
             .padding(0.dp)
-            .height(screenHeight * 0.65f)
+            .height(screenHeight * 0.70f)
             .width(screenWidth * 0.96f)
             .fillMaxSize()
             .shadow(

@@ -11,6 +11,7 @@
 
     <color name="white">#FFFFFFFF</color>
     <color name="black_modified">#FF171717</color>
+    <color name="snap_yellow">#FFFFFC00</color>
     <color name="baby_blue">#FFB1D4E0</color>
     <color name="blue">#FF2E8BC0</color>
     <color name="dark_blue">#FF0C2D48</color>

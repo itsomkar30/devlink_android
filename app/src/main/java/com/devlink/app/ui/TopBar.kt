@@ -1,5 +1,7 @@
 package com.devlink.app.ui
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Text
@@ -14,6 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TopBar(modifier: Modifier = Modifier) {
     TopAppBar(
+        modifier = Modifier.height(60.dp),
         title = { Text("") },
         colors = TopAppBarColors(
             containerColor = Color.Transparent,
@@ -22,6 +25,7 @@ fun TopBar(modifier: Modifier = Modifier) {
             navigationIconContentColor = Color.White,
             actionIconContentColor = Color.White
         )
+
 
 
     )
