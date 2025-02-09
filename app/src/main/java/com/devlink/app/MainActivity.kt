@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.devlink.app.ai_chat.ChatPageView
 import com.devlink.app.authentication.LoginView
 import com.devlink.app.ui.HomeScreenView
 import com.devlink.app.ui.theme.DevlinkTheme
@@ -23,10 +25,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DevlinkTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(Modifier.padding(innerPadding)) {
-//                        Navigation()
-                        HomeScreenView()
+                        Navigation()
+//                        HomeScreenView(navController =navController)
+//                        ChatPageView()
                     }
                 }
             }

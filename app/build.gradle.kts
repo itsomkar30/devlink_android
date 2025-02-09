@@ -62,6 +62,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.compose.ui:ui:1.7.7")
+    implementation("androidx.compose.foundation:foundation:1.7.7")
 
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
     implementation ("androidx.compose.material:material:1.7.7")
@@ -69,4 +71,8 @@ dependencies {
     val nav_version = "2.8.6"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.compose.animation:animation:1.7.7")
+
+    //Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
 }
