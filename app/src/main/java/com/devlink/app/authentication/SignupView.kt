@@ -1,5 +1,6 @@
 package com.devlink.app.authentication
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +40,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.devlink.app.R
 import com.devlink.app.ui.AppFonts
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
 
 @Composable
 fun SignupView(
@@ -100,8 +108,9 @@ fun SignupView(
 
                 var email by rememberSaveable { mutableStateOf("") }
                 var password by rememberSaveable { mutableStateOf("") }
-                var city by rememberSaveable { mutableStateOf("") }
-                var age by rememberSaveable { mutableStateOf("") }
+                var firstname by rememberSaveable { mutableStateOf("") }
+                var lastname by rememberSaveable { mutableStateOf("") }
+                val context = LocalContext.current
 
                 ModifiedTextField(
                     name = email,
@@ -127,22 +136,22 @@ fun SignupView(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     ModifiedTextField(
-                        name = city,
+                        name = firstname,
                         onNameChange = {
-                            city = it
+                            firstname = it
                         },
-                        label = "City",
+                        label = "Firstname",
                         modifier = Modifier.weight(1f)
                     )
 
                     Spacer(modifier = Modifier.width(screenWidth * 0.02f))
 
                     ModifiedTextField(
-                        name = age,
+                        name = lastname,
                         onNameChange = {
-                            age = it
+                            lastname = it
                         },
-                        label = "Age",
+                        label = "Lastname",
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -154,7 +163,16 @@ fun SignupView(
                 ModifiedButton(
                     text = "Create Account",
                     onButtonClick = {
-                        println("Button clicked!")
+                        if (email.isNotEmpty() && password.isNotEmpty() && firstname.isNotEmpty() && lastname.isNotEmpty()) {
+                            val request = SignupRequest(
+                                firstname.trim(),
+                                lastname.trim(),
+                                email.trim(),
+                                password.trim()
+
+                            )
+                            sendSignupRequest(request)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -192,3 +210,30 @@ fun ModifiedButton(text: String, onButtonClick: () -> Unit, modifier: Modifier =
         )
     }
 }
+
+
+fun sendSignupRequest(request: SignupRequest) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitClient.apiService.signup(request)
+
+            withContext(Dispatchers.Main) {  // Switch to main thread for UI updates if needed
+                if (response.isSuccessful && response.body() != null) {
+                    val message = response.body()!!.message
+                    Log.i("Signup Success", "Response: $message")
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("Signup Failed", "Error Code: ${response.code()}, Message: $errorBody")
+                }
+            }
+
+        } catch (e: HttpException) {
+            Log.e("HTTP Error", "Code: ${e.code()}, Message: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("Network Error", "Message: ${e.localizedMessage}")
+        } catch (e: Exception) {
+            Log.e("Unexpected Error", "Message: ${e.localizedMessage}")
+        }
+    }
+}
+

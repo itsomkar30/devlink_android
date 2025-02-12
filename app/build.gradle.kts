@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.compose.ui:ui:1.7.7")
+    implementation ("com.google.code.gson:gson:2.10.1")
     implementation("androidx.compose.foundation:foundation:1.7.7")
 
     implementation ("com.airbnb.android:lottie-compose:6.1.0")

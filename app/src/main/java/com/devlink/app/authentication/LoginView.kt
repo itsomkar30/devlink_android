@@ -1,5 +1,6 @@
 package com.devlink.app.authentication
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,10 +47,16 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.devlink.app.R
 import com.devlink.app.Screen
 import com.devlink.app.ui.AppFonts
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
 
 
 @Composable
-fun LoginView(navController: NavController= rememberNavController()) {
+fun LoginView(navController: NavController = rememberNavController()) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val cardHeight = screenHeight * 0.70f
@@ -128,7 +135,10 @@ fun LoginView(navController: NavController= rememberNavController()) {
                 ModifiedButton(
                     text = "Login",
                     onButtonClick = {
-                        println("Button clicked!")
+                        if (email.isNotEmpty() && password.isNotEmpty()) {
+                            val request = SigninRequest(email.trim(), password.trim())
+                            sendSigninRequest(request)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -235,6 +245,55 @@ fun ModifiedTextField(
         )
 
     )
+}
+
+fun sendSigninRequest(request: SigninRequest) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitClient.apiService.signin(request)
+
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->
+                        val token = responseBody.token
+                        val user = responseBody.user
+
+                        Log.i("Signin Success", "Token: $token")
+//                        Log.i("User Info", "User ID: ${user._id}, Email: ${user.email}")
+
+                        if (user != null) {
+                            Log.i("Signin User Info", "User ID: ${user._id}, Email: ${user.email}")
+                        } else {
+                            Log.e("Signin Failed", "User data is missing in response")
+                        }
+                    } ?: run {
+                        Log.e("Signin Failed", "Empty response body")
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("Signin Failed", "Error Code: ${response.code()}, Message: $errorBody")
+                }
+            }
+
+        } catch (e: HttpException) {
+            withContext(Dispatchers.Main) {
+                Log.e(
+                    "HTTP Error",
+                    "Code: ${e.code()}, Message: ${
+                        e.response()?.errorBody()?.string() ?: e.message()
+                    }"
+                )
+            }
+        } catch (e: IOException) {
+            withContext(Dispatchers.Main) {
+                Log.e("Network Error", "Message: ${e.localizedMessage}")
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Log.e("Unexpected Error", "Message: ${e.localizedMessage}")
+            }
+        }
+    }
 }
 
 
