@@ -52,7 +52,7 @@ fun ChatPageView(navController: NavController) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, "Gemini AI", true, navController) },
+        topBar = { TopBar(90, "Gemini AI", true, navController) },
         bottomBar = { Spacer(modifier = Modifier.height(0.dp)) } // Invisible bottom bar
     ) { paddingValues ->
         Column(

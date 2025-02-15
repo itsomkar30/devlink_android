@@ -4,10 +4,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,19 +26,28 @@ import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,18 +55,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.devlink.app.BottomBtnBar
 import com.devlink.app.BottomNavBar
 import com.devlink.app.R
+import com.devlink.app.Screen
 import com.devlink.app.data.DummyData
 import com.devlink.app.data.dummyDataDelete
 import com.devlink.app.data.dummyDataList
+import kotlinx.coroutines.launch
 
 //
 //@Composable
@@ -85,6 +103,22 @@ import com.devlink.app.data.dummyDataList
 //    }
 //
 //}
+@Composable
+fun DrawerItem(title: String, icon: ImageVector, navController: NavController, route: String = "") {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate(route)
+            }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = title)
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = title, fontFamily = FontFamily(Font(R.font.josefin_sans_bold)))
+    }
+}
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -93,104 +127,193 @@ fun HomeScreenView(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(R.color.black_modified)), // Black background
-            containerColor = colorResource(R.color.black_modified), // Ensure Scaffold background is black
-            topBar = {
-                TopBar(
-                    size = 50,
-                    title = "",
-                    showBackButton = false,
-                    navController = navController
-                )
-            },
-            bottomBar = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    BottomBtnBar(
-                        modifier = Modifier.zIndex(
-                            3f
-                        )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier.fillMaxWidth(0.75f)
+            ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    AsyncImage(
+                        model = R.raw.nav_drawer_background,
+                        contentDescription = "",
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    BottomNavBar(
-                        modifier = Modifier.zIndex(
-                            3f
-                        ), navController
+
+                    AsyncImage(
+                        model = R.raw.sample_user,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .align(Alignment.Center)
+                            .zIndex(1f)
                     )
                 }
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                    },
-                    modifier = Modifier
+
+                DrawerItem(
+                    title = "Manage Account",
+                    icon = Icons.Default.AccountCircle,
+                    navController = navController,
+                    route = Screen.home_screen
+                )
+
+                DrawerItem(
+                    title = "About And Source Code",
+                    icon = Icons.Default.Info,
+                    navController = navController,
+                    route = Screen.home_screen
+
+                )
+
+
+            }
+
+        }
+    ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorResource(R.color.black_modified)), // Black background
+                containerColor = colorResource(R.color.black_modified), // Ensure Scaffold background is black
+                topBar = {
+                    TopBar(
+                        size = 50,
+                        title = "",
+                        showBackButton = false,
+                        navController = navController
+                    )
+                },
+                bottomBar = {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        BottomBtnBar(
+                            modifier = Modifier.zIndex(
+                                3f
+                            )
+                        )
+                        BottomNavBar(
+                            modifier = Modifier.zIndex(
+                                3f
+                            ), navController
+                        )
+                    }
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+                        },
+                        modifier = Modifier
 //                        .padding(
 //                            end = screenWidth * 0.06f,
 //                            bottom = screenHeight * 0.02f
 //                        )
-                        .offset(y = 50.dp)
-                        .size(screenWidth * 0.14f),
-                    shape = CircleShape,
-                    backgroundColor = colorResource(R.color.snap_yellow),
-                    contentColor = colorResource(R.color.black)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Search,
-                        contentDescription = "Search",
-                        tint = Color.Black
-                    )
-
-                }
-            },
-            floatingActionButtonPosition = FabPosition.Center,
-            content = { paddingValues -> // Handles insets like status bar, nav bar
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues) // Apply padding to avoid overlap with system UI
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                            .offset(y = 50.dp)
+                            .size(screenWidth * 0.14f),
+                        shape = CircleShape,
+                        backgroundColor = colorResource(R.color.snap_yellow),
+                        contentColor = colorResource(R.color.black)
                     ) {
-//                        DevListItem()
+                        Icon(
+                            imageVector = Icons.Rounded.Search,
+                            contentDescription = "Search",
+                            tint = Color.Black
+                        )
 
-//
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.TopCenter
+                    }
+                },
+                floatingActionButtonPosition = FabPosition.Center,
+                content = { paddingValues -> // Handles insets like status bar, nav bar
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues) // Apply padding to avoid overlap with system UI
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            dummyDataList.reversed().forEach { item ->
-                                DevListItem(
-                                    item = item,
-                                    onSwiped = { dummyDataDelete(item) }
-                                )
+
+                            TopAccountBar(drawerState = drawerState)
+
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.TopCenter
+                            ) {
+                                dummyDataList.reversed().forEach { item ->
+                                    DevListItem(
+                                        item = item,
+                                        onSwiped = { dummyDataDelete(item) }
+                                    )
+                                }
                             }
                         }
-
-
-//
-//                        Column(
-//                            modifier = Modifier
-//                                .fillMaxSize(),
-//                            horizontalAlignment = Alignment.CenterHorizontally,
-//                            verticalArrangement = Arrangement.Bottom
-//                        ) {
-//                            BottomBtnBar()
-//                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 }
+
+@Composable
+fun TopAccountBar(drawerState: DrawerState) {
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .background(Color.Transparent),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Welcome User",
+                color = Color.White,
+                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                fontSize = 24.sp
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = R.raw.sample_user,
+                    contentDescription = "Account",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .clickable {
+
+                            coroutineScope.launch {
+                                drawerState.open()
+                            }
+                        }
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Icon(
+                    imageVector = Icons.Outlined.Notifications,
+                    contentDescription = "Notification",
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.White
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun DevListItem(item: DummyData, onSwiped: () -> Unit) {
@@ -206,7 +329,7 @@ fun DevListItem(item: DummyData, onSwiped: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(0.dp)
-            .height(screenHeight * 0.70f)
+            .height(screenHeight * 0.65f)
             .width(screenWidth * 0.94f)
             .graphicsLayer {
                 translationX = animatedOffsetX
@@ -299,41 +422,3 @@ fun SwipeBackground(dismissState: DismissState) {
         )
     }
 }
-
-//
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//fun SwipeBackground(dismissState: DismissState) {
-//    val direction = dismissState.dismissDirection ?: return  // Return if no swipe is happening
-//
-//    val color = when (dismissState.targetValue) {
-//        DismissValue.Default -> Color.Transparent
-//        DismissValue.DismissedToEnd -> Color(0xFF4CAF50)  // Green for right swipe
-//        DismissValue.DismissedToStart -> Color(0xFFF44336)  // Red for left swipe
-//    }
-//
-//    val alignment = when (direction) {
-//        DismissDirection.StartToEnd -> Alignment.CenterStart  // Align to start when swiping right
-//        DismissDirection.EndToStart -> Alignment.CenterEnd    // Align to end when swiping left
-//    }
-//
-//    val icon = when (direction) {
-//        DismissDirection.StartToEnd -> Icons.Default.Check  // Icon for right swipe
-//        DismissDirection.EndToStart -> Icons.Default.Delete  // Icon for left swipe
-//    }
-//
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(color)
-//            .padding(horizontal = 20.dp),
-//        contentAlignment = alignment
-//    ) {
-//        Icon(
-//            imageVector = icon,
-//            contentDescription = null,
-//            tint = Color.White
-//        )
-//    }
-//}
-//
