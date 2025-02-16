@@ -14,15 +14,21 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,131 +66,146 @@ fun LoginView(navController: NavController = rememberNavController()) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val cardHeight = screenHeight * 0.70f
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
 
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(-1f)
-                .offset(y = (-70).dp),
-            contentAlignment = Alignment.TopCenter
-
-        ) {
-            LottieAnimationLoop(R.raw.login_gradient, 500.dp)
-        }
-        // Background card
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(cardHeight)
-                .align(Alignment.BottomStart)
-                .offset(y = 50.dp),
-            shape = RoundedCornerShape(
-                topStart = 64.dp,
-                topEnd = 64.dp,
-                bottomStart = 0.dp,
-                bottomEnd = 0.dp
-            ),
-            elevation = CardDefaults.cardElevation(16.dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.black_modified))
+                .padding(paddingValues)
         ) {
 
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = cardHeight * 0.25f, start = 16.dp, end = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .zIndex(-1f)
+                    .offset(y = (-70).dp),
+                contentAlignment = Alignment.TopCenter
+
             ) {
-                var email by rememberSaveable { mutableStateOf("") }
-                var password by rememberSaveable { mutableStateOf("") }
+                LottieAnimationLoop(R.raw.login_gradient, 500.dp)
+            }
+            // Background card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(cardHeight)
+                    .align(Alignment.BottomStart)
+                    .offset(y = 50.dp),
+                shape = RoundedCornerShape(
+                    topStart = 64.dp,
+                    topEnd = 64.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                ),
+                elevation = CardDefaults.cardElevation(16.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.black_modified))
+            ) {
 
-                Text(
-                    text = "Start connecting with Devlink",
-                    fontFamily = AppFonts.josefin_bold,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
-
-                ModifiedTextField(
-                    name = email, onNameChange = {
-                        email = it
-                    },
-                    label = "Email",
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(screenHeight * 0.06f)
-                )
-                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
-                ModifiedTextField(
-                    name = password, onNameChange = {
-                        password = it
-                    },
-                    label = "Password",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(screenHeight * 0.06f)
-                )
-
-                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
-
-                ModifiedButton(
-                    text = "Login",
-                    onButtonClick = {
-                        if (email.isNotEmpty() && password.isNotEmpty()) {
-                            val request = SigninRequest(email.trim(), password.trim())
-                            sendSigninRequest(request)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(screenHeight * 0.06f)
-                )
-
-                Spacer(modifier = Modifier.height(screenHeight * 0.04f))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                        .fillMaxSize()
+                        .padding(top = cardHeight * 0.25f, start = 16.dp, end = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    var email by rememberSaveable { mutableStateOf("") }
+                    var password by rememberSaveable { mutableStateOf("") }
+
                     Text(
-                        text = "Don't have an account?  ",
+                        text = "Start connecting with Devlink",
                         fontFamily = AppFonts.josefin_bold,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         color = Color.White,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Text(
-                        text = "Create account here",
-                        fontFamily = AppFonts.josefin_bold,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = colorResource(R.color.blue),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clickable {
-                            navController.navigate(Screen.signup_screen)
-                        }
+                    Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+
+                    ModifiedTextField(
+                        name = email, onNameChange = {
+                            email = it
+                        },
+                        label = "Email",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenHeight * 0.06f)
                     )
+                    Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+                    ModifiedTextField(
+                        name = password, onNameChange = {
+                            password = it
+                        },
+                        label = "Password",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenHeight * 0.06f)
+                    )
+
+                    Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+
+                    ModifiedButton(
+                        text = "Login",
+                        onButtonClick = {
+                            if (email.isNotEmpty() && password.isNotEmpty()) {
+                                val request = SigninRequest(email.trim(), password.trim())
+                                sendSigninRequest(
+                                    request = request,
+                                    snackbarHostState = snackbarHostState,
+                                    navController = navController
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenHeight * 0.06f)
+                    )
+
+                    Spacer(modifier = Modifier.height(screenHeight * 0.04f))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Don't have an account?  ",
+                            fontFamily = AppFonts.josefin_bold,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Text(
+                            text = "Create account here",
+                            fontFamily = AppFonts.josefin_bold,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = colorResource(R.color.blue),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.clickable {
+                                navController.navigate(Screen.signup_screen)
+                            }
+                        )
+                    }
+
                 }
 
             }
 
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .offset(y = screenHeight * -0.18f)
-                .zIndex(2f), // Ensures it's above all other elements
-            contentAlignment = Alignment.Center
-        ) {
-            LottieAnimationLoop(R.raw.login_animation, screenWidth * 1.0f)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .offset(y = screenHeight * -0.18f)
+                    .zIndex(2f), // Ensures it's above all other elements
+                contentAlignment = Alignment.Center
+            ) {
+                LottieAnimationLoop(R.raw.login_animation, screenWidth * 1.0f)
+            }
         }
     }
 }
@@ -247,7 +268,11 @@ fun ModifiedTextField(
     )
 }
 
-fun sendSigninRequest(request: SigninRequest) {
+fun sendSigninRequest(
+    request: SigninRequest,
+    snackbarHostState: SnackbarHostState,
+    navController: NavController
+) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = RetrofitClient.apiService.signin(request)
@@ -259,19 +284,40 @@ fun sendSigninRequest(request: SigninRequest) {
                         val user = responseBody.user
 
                         Log.i("Signin Success", "Token: $token")
-//                        Log.i("User Info", "User ID: ${user._id}, Email: ${user.email}")
 
                         if (user != null) {
-                            Log.i("Signin User Info", "User ID: ${user._id}, Email: ${user.email}")
+                            Log.i("Signin User Info", "User ID: ${user.id}, Email: ${user.email}")
+                            snackbarHostState.showSnackbar(
+                                message = "Sign-in Successful",
+                                duration = SnackbarDuration.Short
+                            )
+
+                            navController.navigate(Screen.home_screen + "/${user.id}/${user.email}") {
+                                popUpTo(Screen.login_screen) { inclusive = true }
+                            }
+
                         } else {
                             Log.e("Signin Failed", "User data is missing in response")
+                            snackbarHostState.showSnackbar(
+                                message = "Sign-in Failed",
+                                duration = SnackbarDuration.Short
+                            )
                         }
                     } ?: run {
                         Log.e("Signin Failed", "Empty response body")
+                        snackbarHostState.showSnackbar(
+                            message = "Sign-in Failed",
+                            duration = SnackbarDuration.Short
+                        )
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "Unknown error"
                     Log.e("Signin Failed", "Error Code: ${response.code()}, Message: $errorBody")
+                    snackbarHostState.showSnackbar(
+                        message = "Sign-in Failed",
+                        duration = SnackbarDuration.Short
+                    )
+
                 }
             }
 

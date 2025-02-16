@@ -7,24 +7,41 @@ import androidx.navigation.compose.rememberNavController
 import com.devlink.app.ai_chat.ChatPageView
 import com.devlink.app.authentication.LoginView
 import com.devlink.app.authentication.SignupView
+import com.devlink.app.authentication.UserModel
 import com.devlink.app.ui.HomeScreenView
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.home_screen) {
-        composable(Screen.home_screen) {
-            HomeScreenView(navController)
+    NavHost(navController = navController, startDestination = Screen.login_screen) {
+        composable(
+            route = Screen.home_screen + "/{user_id}/{user_email}"
+        ) { backStackEntry ->
+            val user_id = backStackEntry.arguments?.getString("user_id") ?: "invalid user id"
+            val user_email = backStackEntry.arguments?.getString("user_email") ?: "invalid user email"
+
+            HomeScreenView(
+                userModel = UserModel(id = user_id, email = user_email),
+                navController = navController
+            )
         }
+
+
         composable(Screen.login_screen) {
             LoginView(navController)
         }
+
+
         composable(Screen.signup_screen) {
             SignupView(navController)
         }
+
+
         composable(Screen.gemini_screen) {
             ChatPageView(navController = navController)
         }
+
+
     }
 }

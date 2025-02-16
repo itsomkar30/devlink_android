@@ -70,6 +70,7 @@ import com.devlink.app.BottomBtnBar
 import com.devlink.app.BottomNavBar
 import com.devlink.app.R
 import com.devlink.app.Screen
+import com.devlink.app.authentication.UserModel
 import com.devlink.app.data.DummyData
 import com.devlink.app.data.dummyDataDelete
 import com.devlink.app.data.dummyDataList
@@ -124,6 +125,7 @@ fun DrawerItem(title: String, icon: ImageVector, navController: NavController, r
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreenView(
+    userModel: UserModel,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -241,7 +243,7 @@ fun HomeScreenView(
                             verticalArrangement = Arrangement.Center
                         ) {
 
-                            TopAccountBar(drawerState = drawerState)
+                            TopAccountBar(drawerState = drawerState, userModel = userModel)
 
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -263,7 +265,7 @@ fun HomeScreenView(
 }
 
 @Composable
-fun TopAccountBar(drawerState: DrawerState) {
+fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -280,7 +282,7 @@ fun TopAccountBar(drawerState: DrawerState) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Welcome User",
+                text = "Welcome ${userModel.email}",
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
                 fontSize = 24.sp
