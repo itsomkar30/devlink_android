@@ -27,6 +27,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
@@ -157,6 +158,13 @@ fun HomeScreenView(
                             .zIndex(1f)
                     )
                 }
+
+                DrawerItem(
+                    title = "Create Post",
+                    icon = Icons.Default.Add,
+                    navController = navController,
+                    route = Screen.create_post_screen
+                )
 
                 DrawerItem(
                     title = "Manage Account",

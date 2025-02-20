@@ -5,4 +5,5 @@ object Screen {
     const val login_screen = "login_screen"
     const val signup_screen = "signup_screen"
     const val gemini_screen = "gemini_screen"
+    const val create_post_screen = "create_post_screen"
 }

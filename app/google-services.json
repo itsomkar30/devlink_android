@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "154487986874",
+    "project_id": "devlink-android",
+    "storage_bucket": "devlink-android.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154487986874:android:a4f97f8934dd1f11dc0083",
+        "android_client_info": {
+          "package_name": "com.devlink.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBF3tLtrKgrkRRTKXcVTVmXptVVtO0w4mo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

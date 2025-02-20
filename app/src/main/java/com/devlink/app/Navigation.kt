@@ -8,13 +8,14 @@ import com.devlink.app.ai_chat.ChatPageView
 import com.devlink.app.authentication.LoginView
 import com.devlink.app.authentication.SignupView
 import com.devlink.app.authentication.UserModel
+import com.devlink.app.create_post.CreatePostView
 import com.devlink.app.ui.HomeScreenView
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.login_screen) {
+    NavHost(navController = navController, startDestination = Screen.create_post_screen) {
         composable(
             route = Screen.home_screen + "/{user_id}/{user_email}"
         ) { backStackEntry ->
@@ -40,6 +41,10 @@ fun Navigation() {
 
         composable(Screen.gemini_screen) {
             ChatPageView(navController = navController)
+        }
+
+        composable (Screen.create_post_screen){
+            CreatePostView(navController)
         }
 
 
