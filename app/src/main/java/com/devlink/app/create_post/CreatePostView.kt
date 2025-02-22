@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,9 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -47,6 +51,7 @@ import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -57,6 +62,17 @@ fun CreatePostView(navController: NavController) {
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var showPreview by remember { mutableStateOf(false) }
+    var isUploadSuccessful by remember { mutableStateOf(false) }
+    var isUploadFailed by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(isUploadSuccessful, isUploadFailed) {
+        if (isUploadSuccessful || isUploadFailed) {
+            delay(3000) // Show the message for 3 seconds
+            isUploadSuccessful = false
+            isUploadFailed = false
+        }
+    }
 
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -117,8 +133,42 @@ fun CreatePostView(navController: NavController) {
                             onUploadComplete = {
                                 showPreview = false // Hide preview after upload is complete
                                 imageUri = null // Reset imageUri
-                            }
+                            },
+                            isUploadSuccessful = { success ->
+                                isUploadSuccessful = success
+                                isUploadFailed = !success
+                            },
                         )
+                    }
+
+                    if (isUploadSuccessful) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 64.dp, horizontal = 16.dp)
+                        ) {
+                            Text(
+                                "Post Created Successfully",
+                                color = Color.White,
+                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+
+                    if (isUploadFailed) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 64.dp, horizontal = 16.dp)
+                        ) {
+                            Text(
+                                "Failed to Create Post. Try Again.",
+                                color = Color.Red,
+                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
                     }
 
 
@@ -156,6 +206,7 @@ fun UploadPostPreview(
     imageUri: Uri?,
     context: Context,
     onUploadComplete: () -> Unit,
+    isUploadSuccessful: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -199,7 +250,9 @@ fun UploadPostPreview(
                     text = "Upload Post",
                     onButtonClick = {
                         imageUri?.let { uri ->
-                            uploadImageToSupabase(context, uri, "test@b.com")
+                            uploadImageToSupabase(context, uri, "test@b.com") { success ->
+                                isUploadSuccessful(success)
+                            }
                             onUploadComplete()
                         }
                     },
@@ -212,8 +265,6 @@ fun UploadPostPreview(
     }
 
 }
-
-
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -241,17 +292,28 @@ val supabase: SupabaseClient = createSupabaseClient(
     install(Storage)
 }
 
-suspend fun uploadPost(filename: String, byteArray: ByteArray) {
+suspend fun uploadPost(
+    filename: String,
+    byteArray: ByteArray,
+    isUploadSuccessful: (Boolean) -> Unit
+) {
     try {
         val bucket = supabase.storage["user-posts"]
         bucket.upload(path = filename, byteArray)
         Log.i("Image Upload", "Image uploaded successfully!")
+        isUploadSuccessful(true)
     } catch (e: Exception) {
         Log.e("Image Upload Error", "Error: ${e.message}")
+        isUploadSuccessful(false)
     }
 }
 
-fun uploadImageToSupabase(context: Context, uri: Uri, userEmail: String) {
+fun uploadImageToSupabase(
+    context: Context,
+    uri: Uri,
+    userEmail: String,
+    onUploadComplete: (Boolean) -> Unit
+) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -260,10 +322,13 @@ fun uploadImageToSupabase(context: Context, uri: Uri, userEmail: String) {
 
             if (byteArray != null) {
                 val filename = "$userEmail/${System.currentTimeMillis()}.jpg"
-                uploadPost(filename, byteArray)
+                uploadPost(filename, byteArray, isUploadSuccessful = {
+                    onUploadComplete(it)
+                })
             }
         } catch (e: Exception) {
             Log.e("Upload Error", "Error: ${e.message}")
+            onUploadComplete(false)
         }
     }
 }
