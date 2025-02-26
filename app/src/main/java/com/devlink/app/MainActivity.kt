@@ -11,12 +11,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.devlink.app.authentication.LoginView
-import com.devlink.app.create_post.SupabaseCredentials
 import com.devlink.app.ui.theme.DevlinkTheme
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.createSupabaseClient
+import com.devlink.app.user_feed.FeedModel
 
 
 class MainActivity : ComponentActivity() {
@@ -25,6 +24,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            val viewModel = ViewModelProvider(this)[FeedModel::class.java]
+
             DevlinkTheme {
                 val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

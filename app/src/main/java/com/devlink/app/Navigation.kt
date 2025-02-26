@@ -6,25 +6,35 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.devlink.app.ai_chat.ChatPageView
 import com.devlink.app.authentication.LoginView
+import com.devlink.app.authentication.SigninResponse
 import com.devlink.app.authentication.SignupView
 import com.devlink.app.authentication.UserModel
 import com.devlink.app.create_post.CreatePostView
 import com.devlink.app.ui.HomeScreenView
+import com.devlink.app.user_feed.FeedModel
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.create_post_screen) {
+    NavHost(navController = navController, startDestination = Screen.login_screen) {
         composable(
-            route = Screen.home_screen + "/{user_id}/{user_email}"
+            route = Screen.home_screen + "/{user_id}/{user_email}/{token}"
         ) { backStackEntry ->
             val user_id = backStackEntry.arguments?.getString("user_id") ?: "invalid user id"
-            val user_email = backStackEntry.arguments?.getString("user_email") ?: "invalid user email"
+            val user_email =
+                backStackEntry.arguments?.getString("user_email") ?: "invalid user email"
+            val token = backStackEntry.arguments?.getString("token") ?: "invalid user token"
 
             HomeScreenView(
                 userModel = UserModel(id = user_id, email = user_email),
-                navController = navController
+                navController = navController,
+                feedModel = FeedModel(),
+                signinResponse = SigninResponse(
+                    user = UserModel(id = user_id, email = user_email),
+                    token = token
+                )
+//                feed = FeedResponse()
             )
         }
 
@@ -43,7 +53,7 @@ fun Navigation() {
             ChatPageView(navController = navController)
         }
 
-        composable (Screen.create_post_screen){
+        composable(Screen.create_post_screen) {
             CreatePostView(navController)
         }
 

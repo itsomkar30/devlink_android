@@ -1,5 +1,6 @@
 package com.devlink.app.ui
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -33,11 +34,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -45,6 +46,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
@@ -65,16 +68,17 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.devlink.app.BottomBtnBar
 import com.devlink.app.BottomNavBar
 import com.devlink.app.R
 import com.devlink.app.Screen
+import com.devlink.app.authentication.SigninResponse
 import com.devlink.app.authentication.UserModel
-import com.devlink.app.data.DummyData
-import com.devlink.app.data.dummyDataDelete
-import com.devlink.app.data.dummyDataList
+import com.devlink.app.user_feed.FeedModel
+import com.devlink.app.user_feed.UserData
 import kotlinx.coroutines.launch
 
 //
@@ -128,6 +132,8 @@ fun DrawerItem(title: String, icon: ImageVector, navController: NavController, r
 fun HomeScreenView(
     userModel: UserModel,
     navController: NavController,
+    feedModel: FeedModel = viewModel(),
+    signinResponse: SigninResponse,
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -257,12 +263,53 @@ fun HomeScreenView(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.TopCenter
                             ) {
-                                dummyDataList.reversed().forEach { item ->
-                                    DevListItem(
-                                        item = item,
-                                        onSwiped = { dummyDataDelete(item) }
+                                val userList by remember { feedModel.feedDataResponse }
+
+                                LaunchedEffect(Unit) {
+                                    feedModel.FeedCheck(
+                                        userModel = UserModel(
+                                            userModel.id,
+                                            userModel.email
+                                        ),
+                                        signinResponse = SigninResponse(
+                                            user = UserModel(
+                                                userModel.id,
+                                                userModel.email
+                                            ), token = signinResponse.token
+                                        )
                                     )
                                 }
+//                                val userList = feedModel.feedDataResponse.value
+                                Log.i("Response New Data JSON", userList.toString())
+
+                                if (userList.isEmpty()) {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = Color.White,
+                                            strokeWidth = 4.dp
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = "Loading Feed",
+                                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                            color = Color.White
+                                        )
+                                    }
+                                } else {
+                                    userList.reversed().forEach { user ->
+                                        DevListItem(
+                                            item = user,
+                                            onSwiped = { },
+                                            userModel = UserModel(userModel.id, userModel.email),
+                                            feedModel = feedModel
+                                        )
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -326,7 +373,7 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
 
 
 @Composable
-fun DevListItem(item: DummyData, onSwiped: () -> Unit) {
+fun DevListItem(item: UserData, onSwiped: () -> Unit, userModel: UserModel, feedModel: FeedModel) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
@@ -378,20 +425,72 @@ fun DevListItem(item: DummyData, onSwiped: () -> Unit) {
     ) {
 
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Transparent),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = item.skill,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.DarkGray
-            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+//                    .height(screenHeight * 0.45f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.45f)
+//                        .background(Color.Yellow)
+                ) {
+                    AsyncImage(
+                        model = if (item.photoURL != "" || item.photoURL.isNotEmpty()) {
+                            item.photoURL
+                        } else R.raw.default_user, contentDescription = "User Photo",
+                        modifier = Modifier,
+                        contentScale = ContentScale.Crop
+
+                    )
+                }
+
+
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp, bottom = 15.dp, start = 15.dp, end = 15.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                bottomStart = screenWidth * 0.15f,
+                                bottomEnd = screenWidth * 0.15f
+                            )
+                        )
+//                        .background(Color.Cyan)
+                        .height(screenHeight * 0.18f)
+                ) {
+                    Text(
+                        text = "${item.firstname} ${item.lastname}",
+                        fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                        fontSize = 45.sp,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Work mail: ",
+                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = item.email,
+                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
+
         }
     }
 }

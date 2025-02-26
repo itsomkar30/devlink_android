@@ -292,7 +292,7 @@ fun sendSigninRequest(
                                 duration = SnackbarDuration.Short
                             )
 
-                            navController.navigate(Screen.home_screen + "/${user.id}/${user.email}") {
+                            navController.navigate(Screen.home_screen + "/${user.id}/${user.email}/${token}") {
                                 popUpTo(Screen.login_screen) { inclusive = true }
                             }
 
