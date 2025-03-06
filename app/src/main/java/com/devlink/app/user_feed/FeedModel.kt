@@ -41,6 +41,20 @@ class FeedModel : ViewModel() {
         }
 
     }
+
+
+    fun sendConnectionRequest(toUserId: String, status: String, token: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.sendConnectionRequest(toUserId, status, token)
+                Log.i("Connection Success", response.message())
+            } catch (e: Exception) {
+                Log.i("Connection Error", e.message.toString())
+
+            }
+        }
+    }
+
 }
 
 
@@ -68,3 +82,4 @@ class FeedModel : ViewModel() {
 //
 //    }
 //}
+

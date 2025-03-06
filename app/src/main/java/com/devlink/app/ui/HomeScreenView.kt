@@ -305,7 +305,13 @@ fun HomeScreenView(
                                             item = user,
                                             onSwiped = { },
                                             userModel = UserModel(userModel.id, userModel.email),
-                                            feedModel = feedModel
+                                            feedModel = feedModel,
+                                            signinResponse = SigninResponse(
+                                                user = UserModel(
+                                                    userModel.id,
+                                                    userModel.email
+                                                ), token = signinResponse.token
+                                            )
                                         )
                                     }
                                 }
@@ -336,11 +342,16 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Welcome ${userModel.email}",
-                color = Color.White,
-                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                fontSize = 24.sp
+//            Text(
+//                text = "Welcome ${userModel.email}",
+//                color = Color.White,
+//                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+//                fontSize = 24.sp
+//            )
+            AsyncImage(
+                model = R.raw.devlink_logo,
+                contentDescription = "App logo",
+                modifier = Modifier.height(30.dp)
             )
 
             Row(
@@ -373,7 +384,13 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
 
 
 @Composable
-fun DevListItem(item: UserData, onSwiped: () -> Unit, userModel: UserModel, feedModel: FeedModel) {
+fun DevListItem(
+    item: UserData,
+    onSwiped: () -> Unit,
+    userModel: UserModel,
+    feedModel: FeedModel,
+    signinResponse: SigninResponse
+) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
@@ -407,11 +424,26 @@ fun DevListItem(item: UserData, onSwiped: () -> Unit, userModel: UserModel, feed
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {
-                        if (offsetX > 400 || offsetX < -400) {
-                            onSwiped()  // Remove card after swipe
-                        } else {
-                            offsetX = 0f
-                            rotation = 0f
+                        when {
+                            offsetX > 400 -> {
+//                                onSwipedRight()  // Right Swipe Action
+                                feedModel.sendConnectionRequest(
+                                    toUserId = item._id,
+                                    status = "intrested",
+                                    token = signinResponse.token.toString()
+                                )
+                                offsetX = screenWidth.value  // Smooth exit animation
+                            }
+
+                            offsetX < -400 -> {
+//                                onSwipedLeft()   // Left Swipe Action
+                                offsetX = -screenWidth.value  // Smooth exit animation
+                            }
+
+                            else -> {
+                                offsetX = 0f
+                                rotation = 0f
+                            }
                         }
                     },
                     onDrag = { change, dragAmount ->

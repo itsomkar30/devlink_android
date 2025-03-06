@@ -107,6 +107,7 @@ fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String) -> Unit)
                 name = message,
                 onNameChange = { message = it },
                 label = "Message",
+                isSingleLine = false,
                 modifier = Modifier
                     .weight(1f) // Prevents shrinking
             )

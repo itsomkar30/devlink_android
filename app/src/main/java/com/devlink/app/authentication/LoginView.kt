@@ -127,20 +127,24 @@ fun LoginView(navController: NavController = rememberNavController()) {
                     Spacer(modifier = Modifier.height(screenHeight * 0.03f))
 
                     ModifiedTextField(
-                        name = email, onNameChange = {
+                        name = email,
+                        onNameChange = {
                             email = it
                         },
                         label = "Email",
+                        isSingleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(screenHeight * 0.06f)
-                    )
+                            .height(screenHeight * 0.06f),
+
+                        )
                     Spacer(modifier = Modifier.height(screenHeight * 0.03f))
                     ModifiedTextField(
                         name = password, onNameChange = {
                             password = it
                         },
                         label = "Password",
+                        isSingleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(screenHeight * 0.06f)
@@ -236,6 +240,7 @@ fun ModifiedTextField(
     name: String,
     onNameChange: (String) -> Unit,
     label: String,
+    isSingleLine: Boolean,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
@@ -263,7 +268,8 @@ fun ModifiedTextField(
             color = Color.White,
             fontSize = MaterialTheme.typography.bodyLarge.fontSize
 
-        )
+        ),
+        singleLine = isSingleLine
 
     )
 }

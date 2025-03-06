@@ -128,16 +128,18 @@ fun SignupView(
                         onNameChange = {
                             email = it
                         },
-                        label = "Email"
-                    )
+                        label = "Email",
+                        isSingleLine = true
+                        )
                     Spacer(modifier = Modifier.height(screenHeight * 0.02f))
                     ModifiedTextField(
                         name = password,
                         onNameChange = {
                             password = it
                         },
-                        label = "Password"
-                    )
+                        label = "Password",
+                        isSingleLine = true
+                        )
 
                     Spacer(modifier = Modifier.height(screenHeight * 0.02f))
 
@@ -152,6 +154,7 @@ fun SignupView(
                                 firstname = it
                             },
                             label = "Firstname",
+                            isSingleLine = true,
                             modifier = Modifier.weight(1f)
                         )
 
@@ -163,6 +166,7 @@ fun SignupView(
                                 lastname = it
                             },
                             label = "Lastname",
+                            isSingleLine = true,
                             modifier = Modifier.weight(1f)
                         )
                     }
