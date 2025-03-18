@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.devlink.app.authentication.RetrofitClient.apiService
 import com.devlink.app.authentication.SigninResponse
 import com.devlink.app.authentication.UserModel
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 class FeedModel : ViewModel() {
@@ -17,8 +18,7 @@ class FeedModel : ViewModel() {
     fun FeedCheck(userModel: UserModel, signinResponse: SigninResponse) {
 
         val token = signinResponse.token
-//        val token =
-//            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2IwN2Q5MGU2Y2M0OGNjY2NjNDE5NzQiLCJpYXQiOjE3NDAyOTkyOTF9.KtQgHZYY1LhZD8LBh0t8AhN00uQ_9QGaNrrzdr3P1XQ"
+
         viewModelScope.launch {
             try {
                 val request = apiService.user_feed(token = token.toString(), page = 1, limit = 10)
@@ -47,7 +47,14 @@ class FeedModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = apiService.sendConnectionRequest(toUserId, status, token)
+                val url = response.raw().request.url.toString()
+                Log.i("Connection URL ", url)
                 Log.i("Connection Success", response.message())
+
+                if (response.isSuccessful) {
+                    val jsonResponse = Gson().toJson(response.body())
+                    Log.i("Connection Success", jsonResponse)
+                }
             } catch (e: Exception) {
                 Log.i("Connection Error", e.message.toString())
 

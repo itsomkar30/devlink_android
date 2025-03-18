@@ -80,6 +80,9 @@ dependencies {
 
     //Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+    implementation("com.google.firebase:firebase-vertexai")
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+
 
 //    //Firebase
 //    implementation("com.google.firebase:firebase-storage-ktx")

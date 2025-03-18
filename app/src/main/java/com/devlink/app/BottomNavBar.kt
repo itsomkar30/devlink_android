@@ -6,10 +6,12 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -60,9 +62,9 @@ fun BottomNavBar(modifier: Modifier = Modifier.zIndex(2f), navController: NavCon
             badgeCount = 23
         ),
         BottomNavItem(
-            title = "Voice",
-            selectedIcon = Icons.Filled.Call,
-            unselectedIcon = Icons.Outlined.Call,
+            title = "Connections",
+            selectedIcon = Icons.Filled.Person,
+            unselectedIcon = Icons.Outlined.Person,
             hasNews = true
         ),
         BottomNavItem(

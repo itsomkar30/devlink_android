@@ -1,5 +1,6 @@
 package com.devlink.app.ai_chat
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +13,7 @@ class ChatViewModel : ViewModel() {
 
     val generativeModel: GenerativeModel = GenerativeModel(
 //        modelName = "gemini-1.5-pro",
-        modelName = "gemini-pro",
+        modelName = "gemini-2.0-flash",
         apiKey = ApiKey.apiKey
     )
 
@@ -41,6 +42,7 @@ class ChatViewModel : ViewModel() {
                     )
                 )
             } catch (e: Exception) {
+                Log.e("AIChat", "Error: ${e.message}", e)
                 messageList.add(
                     MessageModel(
                         message = "Error: ${e.message.toString()}",

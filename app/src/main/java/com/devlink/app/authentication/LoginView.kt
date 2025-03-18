@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -139,7 +140,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
 
                         )
                     Spacer(modifier = Modifier.height(screenHeight * 0.03f))
-                    ModifiedTextField(
+                    ModifiedTextFieldPassword(
                         name = password, onNameChange = {
                             password = it
                         },
@@ -249,6 +250,46 @@ fun ModifiedTextField(
             onNameChange(it)
         },
         label = { Text(label) },
+
+        colors = OutlinedTextFieldDefaults.colors(
+
+            focusedBorderColor = colorResource(R.color.white),
+            unfocusedTextColor = colorResource(R.color.white),
+            cursorColor = colorResource(R.color.white),
+            focusedLabelColor = colorResource(R.color.white),
+            unfocusedLabelColor = colorResource(R.color.white),
+
+
+            ), shape = RectangleShape,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(0.dp),
+        textStyle = TextStyle(
+            fontFamily = AppFonts.josefin_bold,
+            color = Color.White,
+            fontSize = MaterialTheme.typography.bodyLarge.fontSize
+
+        ),
+        singleLine = isSingleLine
+
+    )
+}
+
+@Composable
+fun ModifiedTextFieldPassword(
+    name: String,
+    onNameChange: (String) -> Unit,
+    label: String,
+    isSingleLine: Boolean,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = name,
+        onValueChange = {
+            onNameChange(it)
+        },
+        label = { Text(label) },
+        visualTransformation = PasswordVisualTransformation(),
 
         colors = OutlinedTextFieldDefaults.colors(
 

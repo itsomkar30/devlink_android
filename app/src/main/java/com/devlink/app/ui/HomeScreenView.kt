@@ -361,7 +361,7 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
                     model = R.raw.sample_user,
                     contentDescription = "Account",
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(35.dp)
                         .clip(CircleShape)
                         .clickable {
 
@@ -374,7 +374,7 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
                 Icon(
                     imageVector = Icons.Outlined.Notifications,
                     contentDescription = "Notification",
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(35.dp),
                     tint = Color.White
                 )
             }
@@ -410,9 +410,9 @@ fun DevListItem(
                 rotationZ = animatedRotation
             }
             .shadow(
-                elevation = screenWidth * 0.05f, // Adjusted elevation for realistic shadow
+                elevation = screenWidth * 0.05f,
                 shape = RoundedCornerShape(screenWidth * 0.15f),
-                ambientColor = Color.Gray.copy(alpha = 0.5f), // Softer shadow color
+                ambientColor = Color.Gray.copy(alpha = 0.5f),
                 spotColor = Color.Black.copy(alpha = 0.3f)
             )
             .clip(RoundedCornerShape(screenWidth * 0.15f))
@@ -427,17 +427,26 @@ fun DevListItem(
                         when {
                             offsetX > 400 -> {
 //                                onSwipedRight()  // Right Swipe Action
+                                Log.i("Connect User id",item._id )
+                                Log.i("Connect User status","intrested" )
+                                Log.i("Connect User id",signinResponse.token.toString())
+
                                 feedModel.sendConnectionRequest(
                                     toUserId = item._id,
                                     status = "intrested",
                                     token = signinResponse.token.toString()
                                 )
-                                offsetX = screenWidth.value  // Smooth exit animation
+                                offsetX = screenWidth.value
                             }
 
                             offsetX < -400 -> {
 //                                onSwipedLeft()   // Left Swipe Action
-                                offsetX = -screenWidth.value  // Smooth exit animation
+                                feedModel.sendConnectionRequest(
+                                    toUserId = item._id,
+                                    status = "ignored",
+                                    token = signinResponse.token.toString()
+                                )
+                                offsetX = -screenWidth.value
                             }
 
                             else -> {
@@ -526,7 +535,9 @@ fun DevListItem(
         }
     }
 }
+fun onSwipedRight(){
 
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
