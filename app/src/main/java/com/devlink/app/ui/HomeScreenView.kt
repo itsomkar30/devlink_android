@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -263,22 +264,22 @@ fun HomeScreenView(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.TopCenter
                             ) {
-                                val userList by remember { feedModel.feedDataResponse }
+//                                val userList = feedModel.feedDataResponse
+                                val userList by remember { derivedStateOf { feedModel.feedDataResponse } }
+//                                val userList = feedModel.feedDataResponse
 
+                                // Fetch feed data when the Composable is first launched
+//                                LaunchedEffect(userList.isEmpty()) {
+//                                    if (userList.isEmpty()) {
+//                                        feedModel.FeedCheck(userModel, signinResponse)
+//                                    }
+//                                }
                                 LaunchedEffect(Unit) {
-                                    feedModel.FeedCheck(
-                                        userModel = UserModel(
-                                            userModel.id,
-                                            userModel.email
-                                        ),
-                                        signinResponse = SigninResponse(
-                                            user = UserModel(
-                                                userModel.id,
-                                                userModel.email
-                                            ), token = signinResponse.token
-                                        )
-                                    )
+                                    if (userList.isEmpty()) {
+                                        feedModel.FeedCheck(userModel, signinResponse)
+                                    }
                                 }
+
 //                                val userList = feedModel.feedDataResponse.value
                                 Log.i("Response New Data JSON", userList.toString())
 
@@ -300,10 +301,13 @@ fun HomeScreenView(
                                         )
                                     }
                                 } else {
-                                    userList.reversed().forEach { user ->
+                                    userList.forEach { user ->
                                         DevListItem(
                                             item = user,
-                                            onSwiped = { },
+                                            onSwiped = {swipedUser->
+//                                                feedModel.removeUserFromList(swipedUser)
+                                                userList.remove(swipedUser)
+                                            },
                                             userModel = UserModel(userModel.id, userModel.email),
                                             feedModel = feedModel,
                                             signinResponse = SigninResponse(
@@ -386,7 +390,7 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
 @Composable
 fun DevListItem(
     item: UserData,
-    onSwiped: () -> Unit,
+    onSwiped: (UserData) -> Unit,
     userModel: UserModel,
     feedModel: FeedModel,
     signinResponse: SigninResponse
@@ -399,6 +403,7 @@ fun DevListItem(
 
     val animatedOffsetX by animateFloatAsState(targetValue = offsetX)
     val animatedRotation by animateFloatAsState(targetValue = rotation)
+
 
     Box(
         modifier = Modifier
@@ -427,9 +432,9 @@ fun DevListItem(
                         when {
                             offsetX > 400 -> {
 //                                onSwipedRight()  // Right Swipe Action
-                                Log.i("Connect User id",item._id )
-                                Log.i("Connect User status","intrested" )
-                                Log.i("Connect User id",signinResponse.token.toString())
+                                Log.i("Connect User id", item._id)
+                                Log.i("Connect User status", "intrested")
+                                Log.i("Connect User id", signinResponse.token.toString())
 
                                 feedModel.sendConnectionRequest(
                                     toUserId = item._id,
@@ -437,16 +442,21 @@ fun DevListItem(
                                     token = signinResponse.token.toString()
                                 )
                                 offsetX = screenWidth.value
+                                onSwiped(item)
                             }
 
                             offsetX < -400 -> {
 //                                onSwipedLeft()   // Left Swipe Action
+                                Log.i("Connect User id", item._id)
+                                Log.i("Connect User status", "ignored")
+                                Log.i("Connect User id", signinResponse.token.toString())
                                 feedModel.sendConnectionRequest(
                                     toUserId = item._id,
                                     status = "ignored",
                                     token = signinResponse.token.toString()
                                 )
                                 offsetX = -screenWidth.value
+                                onSwiped(item)
                             }
 
                             else -> {
@@ -535,7 +545,8 @@ fun DevListItem(
         }
     }
 }
-fun onSwipedRight(){
+
+fun onSwipedRight() {
 
 }
 
