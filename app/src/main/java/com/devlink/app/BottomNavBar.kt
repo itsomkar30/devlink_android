@@ -2,12 +2,10 @@ package com.devlink.app
 
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
@@ -32,6 +30,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.devlink.app.authentication.SigninResponse
+import com.devlink.app.authentication.UserModel
 
 data class BottomNavItem(
     val title: String,
@@ -43,7 +43,11 @@ data class BottomNavItem(
 
 
 @Composable
-fun BottomNavBar(modifier: Modifier = Modifier.zIndex(2f), navController: NavController) {
+fun BottomNavBar(
+    modifier: Modifier = Modifier.zIndex(2f),
+    navController: NavController,
+    signinResponse: SigninResponse,
+) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
@@ -92,7 +96,10 @@ fun BottomNavBar(modifier: Modifier = Modifier.zIndex(2f), navController: NavCon
                     when (index) {
                         0 -> navController.navigate(Screen.home_screen)
                         1 -> navController.navigate(Screen.signup_screen)
-                        2 -> navController.navigate(Screen.login_screen)
+                        2 -> navController.navigate(Screen.navigation_screen + "/${signinResponse.user.id}/${signinResponse.user.email}/${signinResponse.token}") {
+                            popUpTo(Screen.login_screen) { inclusive = true }
+                        }
+
                         3 -> navController.navigate(Screen.gemini_screen)
                     }
                 },

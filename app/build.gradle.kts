@@ -80,14 +80,15 @@ dependencies {
 
     //Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
-    implementation("com.google.firebase:firebase-vertexai")
-    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+
 
 
 //    //Firebase
 //    implementation("com.google.firebase:firebase-storage-ktx")
 //    implementation("com.google.firebase:firebase-analytics-ktx")
-//    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-vertexai")
+
 
     //Supabase
     val supabase_version = "3.1.1"
@@ -98,6 +99,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.ktor:ktor-client-android:$ktor_version")
 //    implementation("io.github.jan-tennert.supabase:supabase-kt-android")
+
+
+    //Datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.3")
 
 
 

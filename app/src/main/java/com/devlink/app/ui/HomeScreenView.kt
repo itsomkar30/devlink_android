@@ -82,34 +82,6 @@ import com.devlink.app.user_feed.FeedModel
 import com.devlink.app.user_feed.UserData
 import kotlinx.coroutines.launch
 
-//
-//@Composable
-//fun HomeScreenView(
-//    navController: NavController = rememberNavController(),
-//    modifier: Modifier = Modifier
-//) {
-//
-//    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-//    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-//
-//    Box(modifier = Modifier.fillMaxSize()) {
-//
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .background(color = colorResource(R.color.black_modified))
-//        ) {
-//            Column(
-//                modifier = Modifier.fillMaxSize(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center
-//            ) {
-//                DevListItem()
-//            }
-//        }
-//    }
-//
-//}
 @Composable
 fun DrawerItem(title: String, icon: ImageVector, navController: NavController, route: String = "") {
     Row(
@@ -128,7 +100,6 @@ fun DrawerItem(title: String, icon: ImageVector, navController: NavController, r
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreenView(
     userModel: UserModel,
@@ -177,7 +148,7 @@ fun HomeScreenView(
                     title = "Manage Account",
                     icon = Icons.Default.AccountCircle,
                     navController = navController,
-                    route = Screen.home_screen
+                    route = Screen.profile_screen + "/${signinResponse.token.toString()}"
                 )
 
                 DrawerItem(
@@ -217,7 +188,14 @@ fun HomeScreenView(
                         BottomNavBar(
                             modifier = Modifier.zIndex(
                                 3f
-                            ), navController
+                            ),
+                            navController = navController,
+                            signinResponse = SigninResponse(
+                                user = UserModel(
+                                    userModel.id, userModel.email
+                                ), signinResponse.token
+                            ),
+//                            user = TODO()
                         )
                     }
                 },
@@ -266,14 +244,7 @@ fun HomeScreenView(
                             ) {
 //                                val userList = feedModel.feedDataResponse
                                 val userList by remember { derivedStateOf { feedModel.feedDataResponse } }
-//                                val userList = feedModel.feedDataResponse
 
-                                // Fetch feed data when the Composable is first launched
-//                                LaunchedEffect(userList.isEmpty()) {
-//                                    if (userList.isEmpty()) {
-//                                        feedModel.FeedCheck(userModel, signinResponse)
-//                                    }
-//                                }
                                 LaunchedEffect(Unit) {
                                     if (userList.isEmpty()) {
                                         feedModel.FeedCheck(userModel, signinResponse)
@@ -304,7 +275,7 @@ fun HomeScreenView(
                                     userList.forEach { user ->
                                         DevListItem(
                                             item = user,
-                                            onSwiped = {swipedUser->
+                                            onSwiped = { swipedUser ->
 //                                                feedModel.removeUserFromList(swipedUser)
                                                 userList.remove(swipedUser)
                                             },

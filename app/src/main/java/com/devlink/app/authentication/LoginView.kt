@@ -1,5 +1,6 @@
 package com.devlink.app.authentication
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -69,6 +71,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
     val cardHeight = screenHeight * 0.70f
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -159,6 +162,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
                             if (email.isNotEmpty() && password.isNotEmpty()) {
                                 val request = SigninRequest(email.trim(), password.trim())
                                 sendSigninRequest(
+                                    context = context,
                                     request = request,
                                     snackbarHostState = snackbarHostState,
                                     navController = navController
@@ -316,6 +320,7 @@ fun ModifiedTextFieldPassword(
 }
 
 fun sendSigninRequest(
+    context: Context,
     request: SigninRequest,
     snackbarHostState: SnackbarHostState,
     navController: NavController
@@ -334,6 +339,16 @@ fun sendSigninRequest(
 
                         if (user != null) {
                             Log.i("Signin User Info", "User ID: ${user.id}, Email: ${user.email}")
+
+
+                            UserPreferences.saveUserData(
+                                context,
+                                token.toString(),
+                                user.id,
+                                user.email
+                            )
+
+
                             snackbarHostState.showSnackbar(
                                 message = "Sign-in Successful",
                                 duration = SnackbarDuration.Short
