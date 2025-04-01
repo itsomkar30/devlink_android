@@ -1,6 +1,8 @@
 package com.devlink.app
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,13 +22,16 @@ import com.devlink.app.authentication.SignupView
 import com.devlink.app.authentication.UserModel
 import com.devlink.app.authentication.UserPreferences
 import com.devlink.app.connection_status.ConnectionScreenView
+import com.devlink.app.connection_status.ConnectionViewModel
 import com.devlink.app.create_post.CreatePostView
+import com.devlink.app.profile.AboutScreenView
 import com.devlink.app.profile.ProfileView
 import com.devlink.app.ui.HomeScreenView
 import com.devlink.app.user_feed.FeedModel
 import com.devlink.app.user_feed.UserData
 import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -84,7 +89,8 @@ fun Navigation() {
                 signinResponse = SigninResponse(
                     user = UserModel(id = user_id, email = user_email),
                     token = token
-                )
+                ),
+                connectionViewModel = ConnectionViewModel()
 //                feed = FeedResponse()
             )
         }
@@ -101,11 +107,15 @@ fun Navigation() {
 
 
         composable(Screen.gemini_screen) {
-            ChatPageView(navController = navController)
+            ChatPageView(navController)
         }
 
         composable(Screen.create_post_screen) {
             CreatePostView(navController)
+        }
+
+        composable(Screen.about_screen) {
+            AboutScreenView(navController)
         }
 
         composable(Screen.auto_login_screen) {
@@ -124,6 +134,7 @@ fun Navigation() {
             ProfileView(
                 navController = navController,
                 userData = userData,
+                connectionViewModel = ConnectionViewModel(),
                 token = token,
                 viewModel = LogoutViewModel()
             )

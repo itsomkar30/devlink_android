@@ -2,6 +2,7 @@ package com.devlink.app.authentication
 
 import com.devlink.app.connection_status.ConnectionReceived
 import com.devlink.app.connection_status.ConnectionSendResponse
+import com.devlink.app.connection_status.UserProfile
 import com.devlink.app.profile.ImageUploadResponse
 import com.devlink.app.user_feed.ConnectionResponse
 import com.devlink.app.user_feed.FeedResponse
@@ -50,9 +51,15 @@ interface ApiService {
         @Query("token") token: String
     ): Response<ConnectionReceived>
 
+    @GET("api/profile/view")
+    suspend fun getProfileFromToken(
+        @Query("token") token: String
+    ): Response<UserProfile>
+
     @Multipart
-    @POST("upload")
+    @POST("upload/{userId}")
     suspend fun uploadImage(
+        @Path("userId") userId: String,
         @Part image: MultipartBody.Part
     ): Response<ImageUploadResponse>
 

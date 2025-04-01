@@ -8,13 +8,28 @@ data class ConnectionReceived(
 data class ConnectionRequestData(
     val _id: String,
     val fromUserId: FromUser,
-    val toUserId: String,
+    val toUserId: FromUser,
     val status: String,
     val createdAt: String,
     val updatedAt: String,
     val __v: Int = 0
 )
 
+data class UserProfile(
+    val _id: String,
+    val firstname: String,
+    val lastname: String,
+    val email: String,
+    val password: String,
+    val photoURL: String,
+    val createdAt: String,
+    val updatedAt: String,
+    val __v: Int = 0
+)
+
 data class FromUser(
-    val _id: String
+    val _id: String,
+    val firstname: String,
+    val lastname: String,
+    val photoURL: String
 )

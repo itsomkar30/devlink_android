@@ -14,6 +14,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +53,8 @@ import com.devlink.app.R
 import com.devlink.app.authentication.LogoutViewModel
 import com.devlink.app.authentication.ModifiedButton
 import com.devlink.app.authentication.RetrofitClient
+import com.devlink.app.connection_status.ConnectionViewModel
+import com.devlink.app.connection_status.UserProfile
 import com.devlink.app.ui.TopBar
 import com.devlink.app.user_feed.UserData
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -57,9 +64,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -69,6 +77,7 @@ import java.io.InputStream
 fun ProfileView(
     navController: NavController,
     userData: UserData,
+    connectionViewModel: ConnectionViewModel,
     token: String,
     viewModel: LogoutViewModel
 ) {
@@ -110,6 +119,14 @@ fun ProfileView(
             isUploadFailed = false
         }
     }
+//
+//    val user by connectionViewModel.user
+//    LaunchedEffect(user) {
+//        if (user == null) {  // Fetch only if user is null
+//            connectionViewModel.fetchProfileFromToken(token)
+//        }
+//    }
+
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -135,44 +152,94 @@ fun ProfileView(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
+                    val user by remember { connectionViewModel.user }
+                    LaunchedEffect(user) {
+                        connectionViewModel.fetchProfileFromToken(token)
+                    }
+
+
                     if (!showPreview) {
                         Column(
                             modifier = Modifier
-                                .height(screenHeight * 0.3f)
+                                .height(screenHeight * 0.42f)
                                 .width(screenWidth * 0.96f)
                                 .clip(RoundedCornerShape(32.dp))
                                 .background(color = colorResource(R.color.black_modified)),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            AsyncImage(
-                                model = "https://devlink-pj.s3.ap-south-1.amazonaws.com/uploads/1742482699763_Screenshot 2023-03-15 165236.png",
-                                contentDescription = "Profile Image",
-                                modifier = Modifier
-                                    .padding(top = 20.dp)
-                                    .height(100.dp)
-                                    .width(100.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                "Omkar Prabhudesai",
-                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                                fontSize = 24.sp
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                "User uid: 67d4627d8ab8bf2aa2696e78",
-                                fontFamily = FontFamily(Font(R.font.josefin_sans)),
-                                fontSize = 16.sp
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                "Work Mail: sample@a.com",
-                                fontFamily = FontFamily(Font(R.font.josefin_sans)),
-                                fontSize = 16.sp
-                            )
+                            if (user != null) {
+                                AsyncImage(
+                                    model = if (user?.photoURL != "" || user?.photoURL!!.isNotEmpty()) {
+                                        user?.photoURL.toString()
+                                    } else {
+                                        R.raw.default_dp
+                                    },
+                                    contentDescription = "Profile Image",
+                                    modifier = Modifier
+                                        .padding(top = 20.dp)
+                                        .height(100.dp)
+                                        .width(100.dp)
+                                        .clip(CircleShape)
+                                        .border(width = 0.5.dp, color = Color.White, shape = CircleShape)
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Text(
+                                    text = "${user?.firstname.toString()} ${user?.lastname.toString()}",
+                                    fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                    fontSize = 24.sp
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Text(
+                                    text = "User uid: ${user?._id.toString()}",
+                                    fontFamily = FontFamily(Font(R.font.josefin_sans)),
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+                                Text(
+                                    text = "Work Mail: ${user?.email.toString()}",
+                                    fontFamily = FontFamily(Font(R.font.josefin_sans)),
+                                    fontSize = 16.sp
+                                )
+                                ModifiedButton(
+                                    text = "Upload Profile Picture",
+                                    onButtonClick = {
+                                        Log.i("ButtonClick", "Upload Profile Picture button clicked")
+
+                                        imagePickerLauncher.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
+
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp)
+                                        .height(screenHeight * 0.05f)
+                                )
+                               Row(){
+                                   Icon(imageVector = Icons.Default.Info, contentDescription = "info")
+
+                                   Text(
+                                       text = "You cannot change the email address",
+                                       fontFamily = FontFamily(Font(R.font.josefin_sans)),
+                                       fontSize = 16.sp,
+                                       modifier = Modifier.padding(start = 4.dp)
+                                   )
+                               }
+                            } else {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = Color.White,
+                                        strokeWidth = 4.dp
+                                    )
+                                }
+                            }
                         }
                     }
+
 
                     // Show Preview if Image is Selected
                     if (showPreview && imageUri != null) {
@@ -188,6 +255,8 @@ fun ProfileView(
                                 isUploadSuccessful = success
                                 isUploadFailed = !success
                             },
+                            connectionViewModel = ConnectionViewModel(),
+                            token = token
                         )
                     }
 
@@ -225,22 +294,22 @@ fun ProfileView(
 
                     // Upload Button
                     if (!showPreview) {
-                        ModifiedButton(
-                            text = "Upload Profile Picture",
-                            onButtonClick = {
-                                Log.i("ButtonClick", "Upload Profile Picture button clicked")
-
-                                imagePickerLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp)
-                                .height(screenHeight * 0.06f)
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
+//                        ModifiedButton(
+//                            text = "Upload Profile Picture",
+//                            onButtonClick = {
+//                                Log.i("ButtonClick", "Upload Profile Picture button clicked")
+//
+//                                imagePickerLauncher.launch(
+//                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//                                )
+//
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(12.dp)
+//                                .height(screenHeight * 0.06f)
+//                        )
+//                        Spacer(modifier = Modifier.height(10.dp))
                         ModifiedButton(
                             text = "Logout",
                             onButtonClick = {
@@ -256,7 +325,7 @@ fun ProfileView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(12.dp)
-                                .height(screenHeight * 0.06f)
+                                .height(screenHeight * 0.05f)
                         )
                     }
                 }
@@ -272,8 +341,15 @@ fun UploadProfilePicturePreview(
     context: Context,
     onUploadComplete: () -> Unit,
     isUploadSuccessful: (Boolean) -> Unit,
+    connectionViewModel: ConnectionViewModel,
+    token: String,
     modifier: Modifier = Modifier
 ) {
+    var user by connectionViewModel.user
+    LaunchedEffect(Unit) {
+        connectionViewModel.fetchProfileFromToken(token)
+    }
+
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
     Box(
@@ -318,7 +394,11 @@ fun UploadProfilePicturePreview(
                     text = "Update Profile Picture",
                     onButtonClick = {
                         imageUri?.let { uri ->
-                            uploadProfilePictureAWS(context, uri) { success, imageUrl ->
+                            uploadProfilePictureAWS(
+                                userId = user?._id.toString(),
+                                context,
+                                uri
+                            ) { success, imageUrl ->
                                 isUploadSuccessful(success)
                                 if (success) {
                                     Log.d(
@@ -343,46 +423,61 @@ fun UploadProfilePicturePreview(
 }
 
 data class ImageUploadResponse(
-    val imageUrl: String
+    val message: String,
+    val user: UserProfile
 )
 
 
 fun uploadProfilePictureAWS(
+    userId: String,
     context: Context,
     imageUri: Uri,
     onUploadComplete: (Boolean, String?) -> Unit
 ) {
+    Log.i("Upload userId", userId)
     CoroutineScope(Dispatchers.IO).launch {
         runCatching {
             // Read image bytes from URI
             context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
         }.onSuccess { byteArray ->
             if (byteArray != null) {
-                val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), byteArray)
+                Log.d("Upload Debug", "Image Byte Array Size: ${byteArray.size}")
+
+                val requestFile = byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull())
                 val body =
                     MultipartBody.Part.createFormData("image", "uploaded_image.jpg", requestFile)
 
                 // Make the API call
-                val response = RetrofitClient.apiService.uploadImage(body)
+                val response = RetrofitClient.apiService.uploadImage(userId, body)
                 if (response.isSuccessful && response.body() != null) {
-                    val imageUrl = response.body()?.imageUrl
+                    val imageUrl = response.body()?.user?.photoURL
                     Log.d("Upload Success", "Image URL: $imageUrl")
-                    onUploadComplete(true, imageUrl)
+
+                    withContext(Dispatchers.Main) {
+                        onUploadComplete(true, imageUrl)
+                    }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "Unknown error"
                     Log.e(
                         "Upload Error",
                         "Response Code: ${response.code()}, ErrorBody: $errorBody"
                     )
-                    onUploadComplete(false, null)
+
+                    withContext(Dispatchers.Main) {
+                        onUploadComplete(false, null)
+                    }
                 }
             } else {
                 Log.e("Upload Error", "Image byte array is null")
-                onUploadComplete(false, null)
+                withContext(Dispatchers.Main) {
+                    onUploadComplete(false, null)
+                }
             }
         }.onFailure { e ->
             Log.e("Upload Error", "Exception: ${e.message}")
-            onUploadComplete(false, null)
+            withContext(Dispatchers.Main) {
+                onUploadComplete(false, null)
+            }
         }
     }
 }

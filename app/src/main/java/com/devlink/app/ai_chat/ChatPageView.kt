@@ -1,6 +1,8 @@
 package com.devlink.app.ai_chat
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,16 +19,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,17 +42,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.devlink.app.R
 import com.devlink.app.authentication.LottieAnimationLoop
 import com.devlink.app.authentication.ModifiedTextField
 import com.devlink.app.ui.TopBar
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
+//@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun ChatPageView(navController: NavController) {
-    val chatViewModel: ChatViewModel = viewModel()
+//    val chatViewModel: ChatViewModel = viewModel()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -61,13 +70,44 @@ fun ChatPageView(navController: NavController) {
                 .background(Color.Black)
                 .padding(paddingValues) // Ensures proper padding
         ) {
-            ChatPage(chatViewModel)
+            ChatPage()
         }
     }
 }
 
+//@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
-fun ChatPage(viewModel: ChatViewModel) {
+fun ChatPage() {
+    val messageList = remember { mutableStateListOf<MessageModel>() }
+    val coroutineScope = rememberCoroutineScope()
+
+    val generativeModel = remember {
+        GenerativeModel(
+            modelName = "gemini-1.5-flash",
+            apiKey = ApiKey.apiKey
+        )
+    }
+
+    fun sendMessage(question: String) {
+        coroutineScope.launch {
+            try {
+                val chat = generativeModel.startChat(
+                    history = messageList.map {
+                        content(it.role) { text(it.message) }
+                    }.toList()
+                )
+
+                messageList.add(MessageModel(message = question.trim(), role = "user"))
+
+                val response = chat.sendMessage(question)
+
+                messageList.add(MessageModel(message = response.text.orEmpty(), role = "model"))
+            } catch (e: Exception) {
+                messageList.add(MessageModel(message = "Error: ${e.message}", role = "model"))
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,15 +115,19 @@ fun ChatPage(viewModel: ChatViewModel) {
     ) {
         // Chat messages
         MessageList(
-            modifier = Modifier.weight(1f), // Ensures it takes all available space but resizes properly
-            messageList = viewModel.messageList
+            modifier = Modifier.weight(1f),
+            messageList = messageList
         )
 
         // Message input bar
         MessageInput(
             modifier = Modifier
                 .fillMaxWidth()
-        ) { viewModel.sendMessage(it) }
+        ) {question->
+//            viewModel.sendMessage(it)
+            sendMessage(question)
+
+        }
     }
 }
 
@@ -135,7 +179,7 @@ fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String) -> Unit)
 @Composable
 fun MessageRow(messageModel: MessageModel) {
 
-    var isModel = messageModel.role == "model"
+    val isModel = messageModel.role == "model"
 
     Row(
         verticalAlignment = Alignment.CenterVertically

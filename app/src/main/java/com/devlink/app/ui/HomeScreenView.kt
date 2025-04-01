@@ -26,6 +26,7 @@ import androidx.compose.material.DismissState
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -78,6 +79,7 @@ import com.devlink.app.R
 import com.devlink.app.Screen
 import com.devlink.app.authentication.SigninResponse
 import com.devlink.app.authentication.UserModel
+import com.devlink.app.connection_status.ConnectionViewModel
 import com.devlink.app.user_feed.FeedModel
 import com.devlink.app.user_feed.UserData
 import kotlinx.coroutines.launch
@@ -106,6 +108,7 @@ fun HomeScreenView(
     navController: NavController,
     feedModel: FeedModel = viewModel(),
     signinResponse: SigninResponse,
+    connectionViewModel: ConnectionViewModel,
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -125,10 +128,18 @@ fun HomeScreenView(
                         contentDescription = "",
                         modifier = Modifier.fillMaxWidth()
                     )
+                    val user by remember { connectionViewModel.user }
+                    LaunchedEffect(user) {
+                        connectionViewModel.fetchProfileFromToken(signinResponse.token.toString())
+                    }
 
                     AsyncImage(
-                        model = R.raw.sample_user,
-                        contentDescription = "",
+                        model = if (user?.photoURL != "" || user?.photoURL!!.isNotEmpty()) {
+                            user?.photoURL.toString()
+                        } else {
+                            R.raw.default_dp
+                        },
+                        contentDescription = "User Profile Picture",
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
@@ -155,7 +166,7 @@ fun HomeScreenView(
                     title = "About And Source Code",
                     icon = Icons.Default.Info,
                     navController = navController,
-                    route = Screen.home_screen
+                    route = Screen.about_screen
 
                 )
 
@@ -236,7 +247,12 @@ fun HomeScreenView(
                             verticalArrangement = Arrangement.Center
                         ) {
 
-                            TopAccountBar(drawerState = drawerState, userModel = userModel)
+                            TopAccountBar(
+                                drawerState = drawerState,
+                                userModel = userModel,
+                                token = signinResponse.token.toString(),
+                                connectionViewModel = connectionViewModel
+                            )
 
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -301,7 +317,12 @@ fun HomeScreenView(
 }
 
 @Composable
-fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
+fun TopAccountBar(
+    drawerState: DrawerState,
+    userModel: UserModel,
+    token: String,
+    connectionViewModel: ConnectionViewModel
+) {
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -317,12 +338,6 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-//            Text(
-//                text = "Welcome ${userModel.email}",
-//                color = Color.White,
-//                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-//                fontSize = 24.sp
-//            )
             AsyncImage(
                 model = R.raw.devlink_logo,
                 contentDescription = "App logo",
@@ -332,11 +347,19 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val user by remember { connectionViewModel.user }
+                LaunchedEffect(user) {
+                    connectionViewModel.fetchProfileFromToken(token)
+                }
                 AsyncImage(
-                    model = R.raw.sample_user,
+                    model = if (user?.photoURL != "" || user?.photoURL!!.isNotEmpty()) {
+                        user?.photoURL.toString()
+                    } else {
+                        R.raw.default_dp
+                    },
                     contentDescription = "Account",
                     modifier = Modifier
-                        .size(35.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
                         .clickable {
 
@@ -344,14 +367,17 @@ fun TopAccountBar(drawerState: DrawerState, userModel: UserModel) {
                                 drawerState.open()
                             }
                         }
+                        .border(width = 0.5.dp, color = Color.White, shape = CircleShape)
                 )
                 Spacer(modifier = Modifier.width(20.dp))
-                Icon(
-                    imageVector = Icons.Outlined.Notifications,
-                    contentDescription = "Notification",
-                    modifier = Modifier.size(35.dp),
-                    tint = Color.White
-                )
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Outlined.Notifications,
+                        contentDescription = "Notification",
+                        modifier = Modifier.size(30.dp),
+                        tint = Color.White
+                    )
+                }
             }
         }
     }

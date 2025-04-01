@@ -2,11 +2,13 @@ package com.devlink.app.connection_status
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlink.app.authentication.RetrofitClient.apiService
 import com.devlink.app.authentication.SigninResponse
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class ConnectionViewModel : ViewModel() {
     val connections = mutableStateListOf<ConnectionRequestData>()
@@ -49,9 +51,40 @@ class ConnectionViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     Log.i("Request Updated", "Response: ${response.body()?.toString()}")
                 } else {
-                    Log.e("Request Update Error", "Error Code: ${response.code()}, Error Body: ${response.errorBody()?.string()}")
+                    Log.e(
+                        "Request Update Error",
+                        "Error Code: ${response.code()}, Error Body: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
                 }
 
+            } catch (e: Exception) {
+                Log.i("Request Update Error", "Response: ${e.message}")
+            }
+        }
+    }
+
+    val user = mutableStateOf<UserProfile?>(null)
+    fun fetchProfileFromToken(token: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getProfileFromToken(token = token)
+                if (response.isSuccessful) {
+                    response.body()?.let { userReceived ->
+                        user.value = userReceived
+                        Log.i("Profile Received", "User: $user")
+                    }
+                } else {
+                    Log.e(
+                        "Request Update Error",
+                        "Error Code: ${response.code()}, Error Body: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                }
+            } catch (e: HttpException) {
+                Log.i("Request Update Error", "Response: ${e.message}")
             } catch (e: Exception) {
                 Log.i("Request Update Error", "Response: ${e.message}")
             }

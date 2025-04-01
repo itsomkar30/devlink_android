@@ -70,7 +70,7 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.1.0")
     implementation("androidx.compose.material:material:1.7.7")
 
-    val nav_version = "2.8.6"
+    val nav_version = "2.8.9"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.compose.animation:animation:1.7.7")
@@ -79,15 +79,15 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 
     //Gemini
-    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
 
 
 //    //Firebase
 //    implementation("com.google.firebase:firebase-storage-ktx")
 //    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
-    implementation("com.google.firebase:firebase-vertexai")
+//    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+//    implementation("com.google.firebase:firebase-vertexai")
 
 
     //Supabase
@@ -98,7 +98,8 @@ dependencies {
     implementation ("io.github.jan-tennert.supabase:storage-kt:$supabase_version")
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.ktor:ktor-client-android:$ktor_version")
-//    implementation("io.github.jan-tennert.supabase:supabase-kt-android")
+    implementation("io.ktor:ktor-client-plugins:$ktor_version")
+
 
 
     //Datastore

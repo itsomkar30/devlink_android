@@ -9,4 +9,5 @@ object Screen {
     const val profile_screen = "profile_screen"
     const val navigation_screen = "navigation_screen"
     const val auto_login_screen = "auto_login_screen"
+    const val about_screen = "about_screen"
 }
