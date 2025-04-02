@@ -45,14 +45,7 @@ import com.devlink.app.ui.TopBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.storage.Storage
-import io.github.jan.supabase.storage.storage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -250,9 +243,9 @@ fun UploadPostPreview(
                     text = "Upload Post",
                     onButtonClick = {
                         imageUri?.let { uri ->
-                            uploadImageToSupabase(context, uri, "test@b.com") { success ->
-                                isUploadSuccessful(success)
-                            }
+//                            uploadImageToSupabase(context, uri, "test@b.com") { success ->
+//                                isUploadSuccessful(success)
+//                            }
                             onUploadComplete()
                         }
                     },
@@ -285,50 +278,50 @@ fun RequestStoragePermission(onGranted: () -> Unit) {
 }
 
 
-val supabase: SupabaseClient = createSupabaseClient(
-    supabaseUrl = SupabaseCredentials.Url,
-    supabaseKey = SupabaseCredentials.Key
-) {
-    install(Storage)
-}
-
-suspend fun uploadPost(
-    filename: String,
-    byteArray: ByteArray,
-    isUploadSuccessful: (Boolean) -> Unit
-) {
-    try {
-        val bucket = supabase.storage["user-posts"]
-        bucket.upload(path = filename, byteArray)
-        Log.i("Image Upload", "Image uploaded successfully!")
-        isUploadSuccessful(true)
-    } catch (e: Exception) {
-        Log.e("Image Upload Error", "Error: ${e.message}")
-        isUploadSuccessful(false)
-    }
-}
-
-fun uploadImageToSupabase(
-    context: Context,
-    uri: Uri,
-    userEmail: String,
-    onUploadComplete: (Boolean) -> Unit
-) {
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val byteArray = inputStream?.readBytes()
-            inputStream?.close()
-
-            if (byteArray != null) {
-                val filename = "$userEmail/${System.currentTimeMillis()}.jpg"
-                uploadPost(filename, byteArray, isUploadSuccessful = {
-                    onUploadComplete(it)
-                })
-            }
-        } catch (e: Exception) {
-            Log.e("Upload Error", "Error: ${e.message}")
-            onUploadComplete(false)
-        }
-    }
-}
+//val supabase: SupabaseClient = createSupabaseClient(
+//    supabaseUrl = SupabaseCredentials.Url,
+//    supabaseKey = SupabaseCredentials.Key
+//) {
+//    install(Storage)
+//}
+//
+//suspend fun uploadPost(
+//    filename: String,
+//    byteArray: ByteArray,
+//    isUploadSuccessful: (Boolean) -> Unit
+//) {
+//    try {
+//        val bucket = supabase.storage["user-posts"]
+//        bucket.upload(path = filename, byteArray)
+//        Log.i("Image Upload", "Image uploaded successfully!")
+//        isUploadSuccessful(true)
+//    } catch (e: Exception) {
+//        Log.e("Image Upload Error", "Error: ${e.message}")
+//        isUploadSuccessful(false)
+//    }
+//}
+//
+//fun uploadImageToSupabase(
+//    context: Context,
+//    uri: Uri,
+//    userEmail: String,
+//    onUploadComplete: (Boolean) -> Unit
+//) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        try {
+//            val inputStream = context.contentResolver.openInputStream(uri)
+//            val byteArray = inputStream?.readBytes()
+//            inputStream?.close()
+//
+//            if (byteArray != null) {
+//                val filename = "$userEmail/${System.currentTimeMillis()}.jpg"
+//                uploadPost(filename, byteArray, isUploadSuccessful = {
+//                    onUploadComplete(it)
+//                })
+//            }
+//        } catch (e: Exception) {
+//            Log.e("Upload Error", "Error: ${e.message}")
+//            onUploadComplete(false)
+//        }
+//    }
+//}

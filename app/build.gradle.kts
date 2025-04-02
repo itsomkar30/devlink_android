@@ -61,49 +61,28 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.compose.ui:ui:1.7.7")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.compose.foundation:foundation:1.7.7")
+    implementation("androidx.compose.foundation:foundation:1.7.8")
 
     implementation("com.airbnb.android:lottie-compose:6.1.0")
-    implementation("androidx.compose.material:material:1.7.7")
+    implementation("androidx.compose.material:material:1.7.8")
 
     val nav_version = "2.8.9"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("androidx.compose.animation:animation:1.7.7")
+    implementation("androidx.compose.animation:animation:1.7.8")
 
     //Permission pop up
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 
     //Gemini
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
-
-
-
-//    //Firebase
-//    implementation("com.google.firebase:firebase-storage-ktx")
-//    implementation("com.google.firebase:firebase-analytics-ktx")
-//    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
-//    implementation("com.google.firebase:firebase-vertexai")
-
-
-    //Supabase
-    val supabase_version = "3.1.1"
-    val ktor_version = "3.1.0"
-
-    implementation(platform("io.github.jan-tennert.supabase:bom:$supabase_version"))
-    implementation ("io.github.jan-tennert.supabase:storage-kt:$supabase_version")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.ktor:ktor-client-android:$ktor_version")
-    implementation("io.ktor:ktor-client-plugins:$ktor_version")
-
-
+    implementation("com.google.ai.client.generativeai:generativeai:0.4.0")
 
     //Datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.3")
+    implementation("androidx.datastore:datastore-preferences:1.1.4")
 
 
 
