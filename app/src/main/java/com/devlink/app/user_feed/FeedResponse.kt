@@ -3,8 +3,7 @@ package com.devlink.app.user_feed
 import androidx.lifecycle.LiveData
 
 data class FeedResponse(
-    val data: List<UserData>,
-    val users: List<UserId>
+    val users: List<User>
 )
 
 data class UserData(
@@ -17,11 +16,11 @@ data class UserData(
 
 
 data class User(
-    val id: String,
+    val skills: List<String>,
+    val _id: String,
     val firstname: String,
     val lastname: String,
-    val photoURL: String?,
-    val age: Int?
+    val photoURL: String
 )
 
 data class UserId(

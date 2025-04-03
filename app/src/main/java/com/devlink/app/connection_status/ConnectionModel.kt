@@ -28,6 +28,7 @@ data class UserProfile(
 )
 
 data class FromUser(
+    val skills: List<String>,
     val _id: String,
     val firstname: String,
     val lastname: String,

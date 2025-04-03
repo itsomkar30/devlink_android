@@ -10,4 +10,6 @@ object Screen {
     const val navigation_screen = "navigation_screen"
     const val auto_login_screen = "auto_login_screen"
     const val about_screen = "about_screen"
+    const val interested_screen = "interested_screen"
+    const val ignored_screen = "ignored_screen"
 }

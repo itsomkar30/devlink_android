@@ -51,6 +51,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -81,7 +82,8 @@ import com.devlink.app.authentication.SigninResponse
 import com.devlink.app.authentication.UserModel
 import com.devlink.app.connection_status.ConnectionViewModel
 import com.devlink.app.user_feed.FeedModel
-import com.devlink.app.user_feed.UserData
+import com.devlink.app.user_feed.InterestedIgnoredViewModel
+import com.devlink.app.user_feed.User
 import kotlinx.coroutines.launch
 
 @Composable
@@ -109,12 +111,14 @@ fun HomeScreenView(
     feedModel: FeedModel = viewModel(),
     signinResponse: SigninResponse,
     connectionViewModel: ConnectionViewModel,
+    interestedIgnoredViewModel: InterestedIgnoredViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -194,7 +198,8 @@ fun HomeScreenView(
                         BottomBtnBar(
                             modifier = Modifier.zIndex(
                                 3f
-                            )
+                            ),
+                            navController = navController
                         )
                         BottomNavBar(
                             modifier = Modifier.zIndex(
@@ -302,7 +307,8 @@ fun HomeScreenView(
                                                     userModel.id,
                                                     userModel.email
                                                 ), token = signinResponse.token
-                                            )
+                                            ),
+                                            interestedIgnoredViewModel = interestedIgnoredViewModel
                                         )
                                     }
                                 }
@@ -386,11 +392,12 @@ fun TopAccountBar(
 
 @Composable
 fun DevListItem(
-    item: UserData,
-    onSwiped: (UserData) -> Unit,
+    item: User,
+    onSwiped: (User) -> Unit,
     userModel: UserModel,
     feedModel: FeedModel,
-    signinResponse: SigninResponse
+    signinResponse: SigninResponse,
+    interestedIgnoredViewModel: InterestedIgnoredViewModel
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -400,7 +407,6 @@ fun DevListItem(
 
     val animatedOffsetX by animateFloatAsState(targetValue = offsetX)
     val animatedRotation by animateFloatAsState(targetValue = rotation)
-
 
     Box(
         modifier = Modifier
@@ -438,6 +444,8 @@ fun DevListItem(
                                     status = "intrested",
                                     token = signinResponse.token.toString()
                                 )
+
+                                interestedIgnoredViewModel.addUserToInterested(item)
                                 offsetX = screenWidth.value
                                 onSwiped(item)
                             }
@@ -452,6 +460,8 @@ fun DevListItem(
                                     status = "ignored",
                                     token = signinResponse.token.toString()
                                 )
+
+                                interestedIgnoredViewModel.addUserToIgnored(item)
                                 offsetX = -screenWidth.value
                                 onSwiped(item)
                             }
@@ -525,12 +535,12 @@ fun DevListItem(
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Work mail: ",
+                            text = "User uid: ",
                             fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
                             color = Color.Gray
                         )
                         Text(
-                            text = item.email,
+                            text = item._id,
                             fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
                             color = Color.Gray
                         )

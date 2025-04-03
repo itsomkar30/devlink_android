@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class FeedModel : ViewModel() {
     var feedData = mutableStateOf<FeedResponse?>(null)
-    var feedDataResponse = mutableStateListOf<UserData>()
+    var feedDataResponse = mutableStateListOf<User>()
 
 
     fun FeedCheck(userModel: UserModel, signinResponse: SigninResponse) {
@@ -23,7 +23,7 @@ class FeedModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val request = apiService.user_feed(token = token.toString(), page = 1, limit = 10)
+                val request = apiService.user_feed(token = token.toString())
                 val url = request.raw().request.url.toString()
                 Log.i("Response Received", request.toString())
                 Log.i("Response URL", url)
@@ -34,7 +34,7 @@ class FeedModel : ViewModel() {
                 val feedResponse = request.body()
 
                 feedDataResponse.clear()
-                feedDataResponse.addAll(feedResponse?.data ?: emptyList())
+                feedDataResponse.addAll(feedResponse?.users ?: emptyList())
 
 
                 Log.i("Response JSON", jsonData.toString())
@@ -47,21 +47,21 @@ class FeedModel : ViewModel() {
         }
 
     }
-    fun removeUserFromList(user: UserData) {
-        viewModelScope.launch {
-            // Log the current list before attempting to remove the user
-            Log.i("Current User List", feedDataResponse.toString())
-
-            val isRemoved = feedDataResponse.remove(user) // Directly remove the user from the list
-            if (isRemoved) {
-                Log.i("User Removed", "Removed ${user.firstname} successfully!")
-            } else {
-                Log.i("User Remove Failed", "Failed to remove ${user.firstname}. The user might not exist in the list.")
-            }
-            // Log the updated list after attempting the removal
-            Log.i("Updated User List", feedDataResponse.toString())
-        }
-    }
+//    fun removeUserFromList(user: UserData) {
+//        viewModelScope.launch {
+//            // Log the current list before attempting to remove the user
+//            Log.i("Current User List", feedDataResponse.toString())
+//
+//            val isRemoved = feedDataResponse.remove(user) // Directly remove the user from the list
+//            if (isRemoved) {
+//                Log.i("User Removed", "Removed ${user.firstname} successfully!")
+//            } else {
+//                Log.i("User Remove Failed", "Failed to remove ${user.firstname}. The user might not exist in the list.")
+//            }
+//            // Log the updated list after attempting the removal
+//            Log.i("Updated User List", feedDataResponse.toString())
+//        }
+//    }
 
     fun sendConnectionRequest(toUserId: String, status: String, token: String) {
         viewModelScope.launch {

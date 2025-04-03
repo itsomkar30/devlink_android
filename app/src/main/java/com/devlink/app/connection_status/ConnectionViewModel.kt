@@ -90,4 +90,29 @@ class ConnectionViewModel : ViewModel() {
             }
         }
     }
+
+    fun fetchProfileFromUserId(userId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getProfileFromUserId(id = userId)
+                if (response.isSuccessful) {
+                    response.body()?.let { userReceived ->
+                        user.value = userReceived
+                        Log.i("Profile Received", "User: $user")
+                    }
+                } else {
+                    Log.e(
+                        "Request Update Error",
+                        "Error Code: ${response.code()}, Error Body: ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                }
+            } catch (e: HttpException) {
+                Log.i("Request Update Error", "Response: ${e.message}")
+            } catch (e: Exception) {
+                Log.i("Request Update Error", "Response: ${e.message}")
+            }
+        }
+    }
 }

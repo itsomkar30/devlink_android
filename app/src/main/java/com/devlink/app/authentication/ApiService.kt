@@ -32,8 +32,6 @@ interface ApiService {
     @GET("api/feed")
     suspend fun user_feed(
         @Query("token") token: String,
-        @Query("page") page: Int,
-        @Query("limit") limit: Int
     ): Response<FeedResponse>
 
     @GET
@@ -54,6 +52,11 @@ interface ApiService {
     @GET("api/profile/view")
     suspend fun getProfileFromToken(
         @Query("token") token: String
+    ): Response<UserProfile>
+
+    @GET("api/profile")
+    suspend fun getProfileFromUserId(
+        @Query("id") id: String
     ): Response<UserProfile>
 
     @Multipart

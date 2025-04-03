@@ -6,10 +6,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -28,6 +30,10 @@ import com.devlink.app.profile.AboutScreenView
 import com.devlink.app.profile.ProfileView
 import com.devlink.app.ui.HomeScreenView
 import com.devlink.app.user_feed.FeedModel
+import com.devlink.app.user_feed.IgnoredScreenView
+import com.devlink.app.user_feed.InterestedIgnoredViewModel
+import com.devlink.app.user_feed.InterestedScreenView
+import com.devlink.app.user_feed.User
 import com.devlink.app.user_feed.UserData
 import kotlinx.coroutines.delay
 
@@ -37,6 +43,7 @@ fun Navigation() {
     val navController = rememberNavController()
     var isCheckingLogin by remember { mutableStateOf(true) }
     val context = LocalContext.current
+    val interestedIgnoredViewModel: InterestedIgnoredViewModel = viewModel()
 
 
     LaunchedEffect(Unit) {
@@ -90,8 +97,8 @@ fun Navigation() {
                     user = UserModel(id = user_id, email = user_email),
                     token = token
                 ),
-                connectionViewModel = ConnectionViewModel()
-//                feed = FeedResponse()
+                connectionViewModel = ConnectionViewModel(),
+                interestedIgnoredViewModel = interestedIgnoredViewModel
             )
         }
 
@@ -116,6 +123,14 @@ fun Navigation() {
 
         composable(Screen.about_screen) {
             AboutScreenView(navController)
+        }
+
+        composable(Screen.interested_screen) {
+            InterestedScreenView(navController = navController, interestedIgnoredViewModel)
+        }
+
+        composable(Screen.ignored_screen) {
+            IgnoredScreenView(navController = navController, interestedIgnoredViewModel)
         }
 
         composable(Screen.auto_login_screen) {
