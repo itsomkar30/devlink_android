@@ -12,4 +12,5 @@ object Screen {
     const val about_screen = "about_screen"
     const val interested_screen = "interested_screen"
     const val ignored_screen = "ignored_screen"
+    const val search_screen = "search_screen"
 }

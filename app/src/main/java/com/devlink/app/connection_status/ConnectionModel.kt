@@ -16,6 +16,7 @@ data class ConnectionRequestData(
 )
 
 data class UserProfile(
+    val skills : List<String>,
     val _id: String,
     val firstname: String,
     val lastname: String,

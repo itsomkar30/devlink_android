@@ -4,6 +4,8 @@ import com.devlink.app.connection_status.ConnectionReceived
 import com.devlink.app.connection_status.ConnectionSendResponse
 import com.devlink.app.connection_status.UserProfile
 import com.devlink.app.profile.ImageUploadResponse
+import com.devlink.app.profile.SkillRequest
+import com.devlink.app.profile.SkillResponse
 import com.devlink.app.user_feed.ConnectionResponse
 import com.devlink.app.user_feed.FeedResponse
 import okhttp3.MultipartBody
@@ -72,4 +74,11 @@ interface ApiService {
         @Path("requestId") requestId: String,
         @Query("token") token: String
     ): Response<ConnectionSendResponse>
+
+    @POST("api/profile/skill")
+    suspend fun updateSkills(
+        @Query("token") token: String,
+        @Body skill: SkillRequest
+    ): Response<SkillResponse>
+
 }

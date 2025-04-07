@@ -253,7 +253,7 @@ fun ModifiedTextField(
         onValueChange = {
             onNameChange(it)
         },
-        label = { Text(label) },
+        label = { Text(label, fontFamily = AppFonts.josefin) },
 
         colors = OutlinedTextFieldDefaults.colors(
 
@@ -292,7 +292,7 @@ fun ModifiedTextFieldPassword(
         onValueChange = {
             onNameChange(it)
         },
-        label = { Text(label) },
+        label = { Text(label, fontFamily = AppFonts.josefin) },
         visualTransformation = PasswordVisualTransformation(),
 
         colors = OutlinedTextFieldDefaults.colors(
