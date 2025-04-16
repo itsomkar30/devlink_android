@@ -84,6 +84,11 @@ dependencies {
     //Datastore
     implementation("androidx.datastore:datastore-preferences:1.1.4")
 
+    implementation("io.socket:socket.io-client:2.1.0") {
+        exclude("org.json", "json")
+    }
+
+
 
 
 }

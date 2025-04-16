@@ -81,4 +81,10 @@ interface ApiService {
         @Body skill: SkillRequest
     ): Response<SkillResponse>
 
+    @GET("api/feed")
+    suspend fun getUsersFromSkill(
+        @Query("token") token: String,
+        @Query("skills") skills: String
+    ): Response<FeedResponse>
+
 }

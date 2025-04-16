@@ -3,7 +3,6 @@ package com.devlink.app.user_feed
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devlink.app.authentication.RetrofitClient.apiService
@@ -15,6 +14,8 @@ import kotlinx.coroutines.launch
 class FeedModel : ViewModel() {
     var feedData = mutableStateOf<FeedResponse?>(null)
     var feedDataResponse = mutableStateListOf<User>()
+    var skillFeedData = mutableStateOf<FeedResponse?>(null)
+    var skillFeedDataResponse = mutableStateListOf<User>()
 
 
     fun FeedCheck(userModel: UserModel, signinResponse: SigninResponse) {
@@ -47,6 +48,31 @@ class FeedModel : ViewModel() {
         }
 
     }
+
+    fun fetchFeedFromSkill(token: String, skills: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getUsersFromSkill(token, skills)
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    skillFeedData.value = responseBody
+
+                    skillFeedDataResponse.clear()
+                    skillFeedDataResponse.addAll(responseBody?.users ?: emptyList())
+
+                    Log.i("Skill Feed Success", responseBody.toString())
+                    Log.i("Skill Users List", skillFeedDataResponse.toString())
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("Skill Feed Error", "Code: ${response.code()}, Error: $errorBody")
+                }
+            } catch (e: Exception) {
+                Log.e("Skill Feed Exception", e.message.toString())
+            }
+        }
+    }
+
 //    fun removeUserFromList(user: UserData) {
 //        viewModelScope.launch {
 //            // Log the current list before attempting to remove the user

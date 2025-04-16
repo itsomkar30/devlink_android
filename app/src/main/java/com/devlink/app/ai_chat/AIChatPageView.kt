@@ -47,8 +47,8 @@ import com.devlink.app.ui.TopBar
 
 
 @Composable
-fun ChatPageView(navController: NavController) {
-    val chatViewModel: ChatViewModel = viewModel()
+fun AIChatPageView(navController: NavController) {
+    val chatViewModel: AIChatViewModel = viewModel()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +67,7 @@ fun ChatPageView(navController: NavController) {
 }
 
 @Composable
-fun ChatPage(viewModel: ChatViewModel) {
+fun ChatPage(viewModel: AIChatViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()

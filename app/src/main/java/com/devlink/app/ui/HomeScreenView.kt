@@ -218,12 +218,9 @@ fun HomeScreenView(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
+                            navController.navigate(Screen.search_screen + "/${signinResponse.token.toString()}")
                         },
                         modifier = Modifier
-//                        .padding(
-//                            end = screenWidth * 0.06f,
-//                            bottom = screenHeight * 0.02f
-//                        )
                             .offset(y = 50.dp)
                             .size(screenWidth * 0.14f),
                         shape = CircleShape,
