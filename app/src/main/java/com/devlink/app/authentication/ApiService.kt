@@ -1,5 +1,6 @@
 package com.devlink.app.authentication
 
+import android.telecom.ConnectionRequest
 import com.devlink.app.connection_status.ConnectionReceived
 import com.devlink.app.connection_status.ConnectionSendResponse
 import com.devlink.app.connection_status.UserProfile
@@ -8,6 +9,7 @@ import com.devlink.app.profile.SkillRequest
 import com.devlink.app.profile.SkillResponse
 import com.devlink.app.user_feed.ConnectionResponse
 import com.devlink.app.user_feed.FeedResponse
+import com.devlink.app.user_feed.User
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -86,5 +88,10 @@ interface ApiService {
         @Query("token") token: String,
         @Query("skills") skills: String
     ): Response<FeedResponse>
+
+    @GET("api/request/get")
+    suspend fun getMessageUsers(
+        @Query("token") token: String
+    ): Response<List<User>>
 
 }

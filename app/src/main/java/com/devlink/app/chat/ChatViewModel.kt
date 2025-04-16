@@ -2,10 +2,14 @@ package com.devlink.app.chat
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.devlink.app.authentication.RetrofitClient.apiService
+import com.devlink.app.user_feed.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
 
@@ -53,4 +57,30 @@ class ChatViewModel : ViewModel() {
         Log.i("ChatViewModel", "ViewModel cleared. Disconnecting socket...")
         Socket.disconnect()
     }
+
+    private val _connections = MutableStateFlow<List<User>>(emptyList())
+    val connections: StateFlow<List<User>> = _connections
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    fun fetchConnections(token: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getMessageUsers(token)
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    Log.i("ConnectionResponse", "Success: $data")
+                    _connections.value = data ?: emptyList()
+                } else {
+                    Log.i("ConnectionResponse", "Error code: ${response.code()}")
+                    _errorMessage.value = "Error: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                Log.i("ConnectionResponse", "Exception: ${e.message}")
+                _errorMessage.value = "Exception: ${e.message}"
+            }
+        }
+    }
+
 }

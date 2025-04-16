@@ -14,4 +14,5 @@ object Screen {
     const val ignored_screen = "ignored_screen"
     const val search_screen = "search_screen"
     const val chat_screen = "chat_screen"
+    const val message_screen = "message_screen"
 }

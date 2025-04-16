@@ -23,6 +23,7 @@ import com.devlink.app.authentication.SignupView
 import com.devlink.app.authentication.UserModel
 import com.devlink.app.authentication.UserPreferences
 import com.devlink.app.chat.ChatScreenView
+import com.devlink.app.chat.MessageScreen
 import com.devlink.app.connection_status.ConnectionScreenView
 import com.devlink.app.connection_status.ConnectionViewModel
 import com.devlink.app.create_post.CreatePostView
@@ -133,9 +134,21 @@ fun Navigation() {
             IgnoredScreenView(navController = navController, interestedIgnoredViewModel)
         }
 
+        composable(Screen.message_screen + "/{token}/{targetUserId}/{targetUserName}") { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            val targetUserId = backStackEntry.arguments?.getString("targetUserId") ?: ""
+            val targetUserName = backStackEntry.arguments?.getString("targetUserName") ?: ""
+            MessageScreen(
+                token = token,
+                targetUserId = targetUserId,
+                targetUserName = targetUserName,
+                navController = navController
+            )
+        }
+
         composable(Screen.chat_screen + "/{token}") { backStackEntry ->
             val token = backStackEntry.arguments?.getString("token") ?: ""
-            ChatScreenView(token = token)
+            ChatScreenView(navController = navController, token = token)
         }
 
         composable(Screen.search_screen + "/{token}") { backStackEntry ->
