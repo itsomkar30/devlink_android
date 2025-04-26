@@ -208,8 +208,8 @@ fun MessageScreen(token: String, targetUserId: String, targetUserName: String, n
                         onClick = {
                             if (input.isNotBlank()) {
                                 viewModel.sendMessage(
-                                    firstName = "User",
-                                    lastName = "Xtreme",
+                                    firstName = user?.firstname.toString(),
+                                    lastName = user?.lastname.toString(),
                                     userId = user?._id.toString(),
                                     targetUserId = targetUserId,
                                     message = input
@@ -237,12 +237,10 @@ fun MessageScreen(token: String, targetUserId: String, targetUserName: String, n
     LaunchedEffect(user?._id) {
         if (user?._id != null) {
             viewModel.joinChat(
-                firstName = "testname",
+                firstName = user?._id + targetUserId,
                 userId = user?._id.toString(),
                 targetUserId = targetUserId
             )
         }
     }
 }
-
-
