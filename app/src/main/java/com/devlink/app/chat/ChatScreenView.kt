@@ -3,6 +3,7 @@ package com.devlink.app.chat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,6 +50,7 @@ import com.devlink.app.R
 import com.devlink.app.Screen
 import com.devlink.app.authentication.ModifiedTextField
 import com.devlink.app.connection_status.ConnectionViewModel
+import com.devlink.app.connection_status.UserProfile
 import com.devlink.app.ui.TopBar
 import com.devlink.app.user_feed.User
 
@@ -146,7 +150,12 @@ fun MessageUserItem(user: User, token: String, navController: NavController) {
 }
 
 @Composable
-fun MessageScreen(token: String, targetUserId: String, targetUserName: String, navController: NavController) {
+fun MessageScreen(
+    token: String,
+    targetUserId: String,
+    targetUserName: String,
+    navController: NavController
+) {
     val viewModel: ChatViewModel = viewModel()
     val connectionViewModel: ConnectionViewModel = viewModel()
     val messages by viewModel.messages.collectAsState()
@@ -173,23 +182,24 @@ fun MessageScreen(token: String, targetUserId: String, targetUserName: String, n
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color = colorResource(R.color.jet_black))
-                    .padding(8.dp)
             ) {
-                Text(targetUserId)
+//                Text(targetUserId)
                 LazyColumn(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp)
+                        .weight(1f),
+                    reverseLayout = true
                 ) {
-                    items(messages) { msg ->
-                        Text("${msg.senderName}: ${msg.text}", modifier = Modifier.padding(4.dp))
+                    items(messages.reversed()) { msg ->
+//                        Text("${msg.senderName}: ${msg.text}", modifier = Modifier.padding(4.dp))
+                        MessageRow(message = msg, user = user)
                     }
                 }
 
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(8.dp),
 
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -208,11 +218,11 @@ fun MessageScreen(token: String, targetUserId: String, targetUserName: String, n
                         onClick = {
                             if (input.isNotBlank()) {
                                 viewModel.sendMessage(
-                                    firstName = user?.firstname.toString(),
+                                    firstName = user?._id.toString(),
                                     lastName = user?.lastname.toString(),
                                     userId = user?._id.toString(),
                                     targetUserId = targetUserId,
-                                    message = input
+                                    message = input.trim()
                                 )
                                 input = ""
                             }
@@ -237,10 +247,51 @@ fun MessageScreen(token: String, targetUserId: String, targetUserName: String, n
     LaunchedEffect(user?._id) {
         if (user?._id != null) {
             viewModel.joinChat(
-                firstName = user?._id + targetUserId,
+                firstName = user?._id.toString(),
                 userId = user?._id.toString(),
                 targetUserId = targetUserId
             )
         }
     }
+}
+
+@Composable
+fun MessageRow(message: ChatMessage, user: UserProfile?) {
+
+    var isSender = message.senderName == user?._id
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .align(
+                        if (isSender) Alignment.BottomEnd else Alignment.BottomStart
+                    )
+                    .padding(
+                        start = if (!isSender) 8.dp else 50.dp,
+                        end = if (!isSender) 70.dp else 8.dp,
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
+                    .clip(RoundedCornerShape(48f))
+                    .background(
+                        if (!isSender) colorResource(R.color.black_modified) else colorResource(R.color.white)
+                    )
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = message.text,
+                    fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                    fontWeight = FontWeight(500),
+                    color = if (!isSender) colorResource(R.color.white) else
+                        colorResource(R.color.black_modified)
+                )
+            }
+
+
+        }
+    }
+
 }
