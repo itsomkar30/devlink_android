@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
@@ -26,14 +28,12 @@ import androidx.compose.material.DismissState
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
@@ -51,7 +51,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -372,15 +371,8 @@ fun TopAccountBar(
                         }
                         .border(width = 0.5.dp, color = Color.White, shape = CircleShape)
                 )
-                Spacer(modifier = Modifier.width(20.dp))
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Outlined.Notifications,
-                        contentDescription = "Notification",
-                        modifier = Modifier.size(30.dp),
-                        tint = Color.White
-                    )
-                }
+                Spacer(modifier = Modifier.width(10.dp))
+
             }
         }
     }
@@ -421,7 +413,7 @@ fun DevListItem(
                 spotColor = Color.Black.copy(alpha = 0.3f)
             )
             .clip(RoundedCornerShape(screenWidth * 0.15f))
-            .background(color = colorResource(R.color.white).copy(alpha = 0.9f))
+            .background(color = colorResource(R.color.white).copy(alpha = 1f))
             .border(
                 BorderStroke(1.dp, Color.White),
                 shape = RoundedCornerShape(screenWidth * 0.15f)
@@ -489,7 +481,8 @@ fun DevListItem(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(), verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
 //                    .height(screenHeight * 0.45f)
             ) {
                 Box(
@@ -502,7 +495,7 @@ fun DevListItem(
                         model = if (item.photoURL != "" || item.photoURL.isNotEmpty()) {
                             item.photoURL
                         } else R.raw.default_user, contentDescription = "User Photo",
-                        modifier = Modifier,
+                        modifier = Modifier.align(Alignment.Center),
                         contentScale = ContentScale.Crop
 
                     )
@@ -530,16 +523,48 @@ fun DevListItem(
                         color = Color.Black
                     )
                     Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                    ) {
+                        Text(
+                            text = "Skills: ",
+                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                            fontSize = 15.sp,
+                            color = Color.Black
+                        )
+                        if (item.skills.isEmpty()) {
+                            Text(
+                                text = "Not updated yet",
+                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                fontSize = 15.sp,
+                                color = Color.Black
+                            )
+                        } else {
+                            LazyRow(verticalAlignment = Alignment.CenterVertically) {
+                                items(item.skills) { skill ->
+                                    SkillItemForHomeScreen(skill)
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "User uid: ",
                             fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                            color = Color.Gray
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                         Text(
                             text = item._id,
                             fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                            color = Color.Gray
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                     }
                 }
@@ -548,6 +573,20 @@ fun DevListItem(
 
         }
     }
+}
+
+@Composable
+fun SkillItemForHomeScreen(skill: String) {
+    Text(
+        text = skill,
+        fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+        color = Color.White,
+        fontSize = 15.sp,
+        modifier = Modifier
+            .padding(4.dp)
+            .background(Color.Gray.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp))
+            .padding(horizontal = 8.dp, vertical = 0.dp)
+    )
 }
 
 fun onSwipedRight() {
