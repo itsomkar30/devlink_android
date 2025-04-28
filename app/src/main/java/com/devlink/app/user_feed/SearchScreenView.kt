@@ -55,9 +55,7 @@ fun SearchScreenView(navController: NavController, token: String) {
     val feedModel: FeedModel = viewModel()
     val userList = feedModel.skillFeedDataResponse
     var searchSkill by remember { mutableStateOf("") }
-//    LaunchedEffect(Unit) {
-//        feedModel.fetchFeedFromSkill(token, "kotlin")
-//    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { TopBar(75, "Search Users", true, navController) },
@@ -260,11 +258,6 @@ fun SearchUserItem(user: User, token: String, feedModel: FeedModel, navControlle
                     ) {
                         IconButton(
                             onClick = {
-                                feedModel.sendConnectionRequest(
-                                    toUserId = user?._id.toString(),
-                                    status = "ignored",
-                                    token = token
-                                )
                                 showDialog = false
                             },
                             modifier = Modifier
@@ -306,7 +299,7 @@ fun SearchUserItem(user: User, token: String, feedModel: FeedModel, navControlle
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Check,
-                                contentDescription = "Accepted button",
+                                contentDescription = "Interested button",
                                 tint = Color.Green
                             )
                         }

@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
@@ -51,6 +52,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -67,6 +69,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -83,6 +86,7 @@ import com.devlink.app.connection_status.ConnectionViewModel
 import com.devlink.app.user_feed.FeedModel
 import com.devlink.app.user_feed.InterestedIgnoredViewModel
 import com.devlink.app.user_feed.User
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -271,29 +275,71 @@ fun HomeScreenView(
 //                                val userList = feedModel.feedDataResponse.value
                                 Log.i("Response New Data JSON", userList.toString())
 
+                                var isTimeout by remember { mutableStateOf(false) }
+
+                                LaunchedEffect(userList) {
+                                    if (userList.isEmpty()) {
+                                        delay(10000) // wait for 10 seconds
+                                        if (userList.isEmpty()) {
+                                            isTimeout = true
+                                        }
+                                    } else {
+                                        isTimeout = false
+                                    }
+                                }
+
                                 if (userList.isEmpty()) {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        CircularProgressIndicator(
-                                            color = Color.White,
-                                            strokeWidth = 4.dp
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        Text(
-                                            text = "Loading Feed",
-                                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                                            color = Color.White
-                                        )
+                                    if (isTimeout) {
+                                        // Timeout occurred, show error
+                                        Column(
+                                            modifier = Modifier.fillMaxSize(),
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Refresh, // or another error icon if you want
+                                                contentDescription = "No Internet",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                            Text(
+                                                text = "Failed to load feed",
+                                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                                color = Color.White,
+                                                textAlign = TextAlign.Center
+                                            )
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                            Text(
+                                                text = "Please check your internet connection",
+                                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                                color = Color.White,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    } else {
+                                        Column(
+                                            modifier = Modifier.fillMaxSize(),
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = Color.White,
+                                                strokeWidth = 4.dp
+                                            )
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                            Text(
+                                                text = "Loading Feed",
+                                                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                                color = Color.White
+                                            )
+                                        }
                                     }
                                 } else {
                                     userList.forEach { user ->
                                         DevListItem(
                                             item = user,
                                             onSwiped = { swipedUser ->
-//                                                feedModel.removeUserFromList(swipedUser)
                                                 userList.remove(swipedUser)
                                             },
                                             userModel = UserModel(userModel.id, userModel.email),
@@ -308,7 +354,6 @@ fun HomeScreenView(
                                         )
                                     }
                                 }
-
                             }
                         }
                     }

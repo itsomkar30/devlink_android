@@ -93,7 +93,7 @@ fun BottomNavBar(
                 onClick = {
                     selectedItemIndex = index
                     when (index) {
-                        0 -> navController.navigate(Screen.home_screen)
+                        0 -> {}
                         1 -> navController.navigate(Screen.chat_screen + "/${signinResponse.token}")
                         2 -> navController.navigate(Screen.navigation_screen + "/${signinResponse.user.id}/${signinResponse.user.email}/${signinResponse.token}") {
                             popUpTo(Screen.login_screen) { inclusive = true }

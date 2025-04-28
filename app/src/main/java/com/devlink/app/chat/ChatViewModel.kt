@@ -83,4 +83,29 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    fun fetchChats(token: String, toUserId: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getChats(token, toUserId)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        Log.i("ChatResponse", "Chats: ${it.chats}")
+                        // Convert Chat objects to ChatMessage objects
+                        _messages.value = it.chats.map { chat ->
+                            ChatMessage(
+                                senderName = chat.senderId, // or any mapping logic that suits your data model
+                                text = chat.text
+                            )
+                        }
+                    } ?: Log.i("ChatResponse", "Empty response body")
+                } else {
+                    Log.i("ChatResponse", "Error: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.i("ChatResponse", "Exception fetching chats: ${e.message}")
+            }
+        }
+    }
+
+
 }

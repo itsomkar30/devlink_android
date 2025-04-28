@@ -5,8 +5,15 @@ data class ChatMessage(
     val text: String
 )
 
-//data class ChatMessage(
-//    val firstName: String,
-//    val lastName: String,
-//    val text: String
-//)
+data class Chat(
+    val senderId: String,
+    val text: String,
+    val _id: String,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+data class ChatResponse(
+    val chats: List<Chat>
+)
+

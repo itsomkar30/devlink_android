@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +42,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,6 +55,7 @@ import com.devlink.app.connection_status.ConnectionViewModel
 import com.devlink.app.connection_status.UserProfile
 import com.devlink.app.ui.TopBar
 import com.devlink.app.user_feed.User
+import kotlinx.coroutines.delay
 
 @Composable
 fun ChatScreenView(navController: NavController, token: String) {
@@ -75,16 +78,65 @@ fun ChatScreenView(navController: NavController, token: String) {
                 .padding(paddingValues) // Ensures proper padding
         ) {
 
+            var isTimeout by remember { mutableStateOf(false) }
+
+            LaunchedEffect(messageUsers) {
+                if (messageUsers.isEmpty()) {
+                    delay(10000) // wait for 10 seconds
+                    if (messageUsers.isEmpty()) {
+                        isTimeout = true
+                    }
+                } else {
+                    isTimeout = false
+                }
+            }
+
             if (messageUsers.isEmpty()) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(
-                        color = Color.White,
-                        strokeWidth = 4.dp
-                    )
+                if (isTimeout) {
+                    // Timeout occurred, show error
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "No Internet",
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Seems like you have no connections to chat",
+                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Please check your internet connection",
+                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            strokeWidth = 4.dp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Loading Users...",
+                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                            color = Color.White
+                        )
+                    }
                 }
             } else {
                 LazyColumn(
@@ -162,10 +214,18 @@ fun MessageScreen(
     var input by remember { mutableStateOf("") }
     val targetUserId = targetUserId
 
+
     val user by remember { connectionViewModel.user }
     LaunchedEffect(user) {
         connectionViewModel.fetchProfileFromToken(token)
     }
+    LaunchedEffect(token, targetUserId, user) {
+        // Ensure that the token is valid and the user profile is loaded before fetching chats.
+        if (user != null && token.isNotBlank()) {
+            viewModel.fetchChats(token, targetUserId)
+        }
+    }
+
 
 
     Scaffold(

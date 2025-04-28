@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,6 +53,7 @@ import coil.compose.AsyncImage
 import com.devlink.app.R
 import com.devlink.app.authentication.SigninResponse
 import com.devlink.app.ui.TopBar
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
@@ -94,22 +96,65 @@ fun ConnectionScreen(viewModel: ConnectionViewModel, signinResponse: SigninRespo
     Log.i("Connections", connections.toString())
 
 
+    var isTimeout by remember { mutableStateOf(false) }
+
+    LaunchedEffect(connections) {
+        if (connections.isEmpty()) {
+            delay(10000) // wait for 10 seconds
+            if (connections.isEmpty()) {
+                isTimeout = true
+            }
+        } else {
+            isTimeout = false
+        }
+    }
+
     if (connections.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 4.dp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Loading Connections",
-                fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                color = Color.White
-            )
+        if (isTimeout) {
+            // Timeout occurred, show error
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "No Internet",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No new connection requests",
+                    fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Please check your internet connection",
+                    fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    strokeWidth = 4.dp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Loading Connections...",
+                    fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                    color = Color.White
+                )
+            }
         }
     } else {
         LazyColumn(
@@ -121,6 +166,7 @@ fun ConnectionScreen(viewModel: ConnectionViewModel, signinResponse: SigninRespo
             }
         }
     }
+
 
 }
 

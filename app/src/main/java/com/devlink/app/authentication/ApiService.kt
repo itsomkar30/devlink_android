@@ -1,6 +1,7 @@
 package com.devlink.app.authentication
 
 import android.telecom.ConnectionRequest
+import com.devlink.app.chat.ChatResponse
 import com.devlink.app.connection_status.ConnectionReceived
 import com.devlink.app.connection_status.ConnectionSendResponse
 import com.devlink.app.connection_status.UserProfile
@@ -93,5 +94,11 @@ interface ApiService {
     suspend fun getMessageUsers(
         @Query("token") token: String
     ): Response<List<User>>
+
+    @GET("api/user/chat")
+    suspend fun getChats(
+        @Query("token") token: String,
+        @Query("toUserId") toUserId: String
+    ): Response<ChatResponse>
 
 }

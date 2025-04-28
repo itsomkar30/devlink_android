@@ -31,6 +31,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -54,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -168,6 +170,19 @@ fun ProfileView(
 
 
                     if (!showPreview) {
+                        var isTimeout by remember { mutableStateOf(false) }
+
+                        LaunchedEffect(user) {
+                            if (user == null) {
+                                delay(10000)
+                                if (user == null) {
+                                    isTimeout = true
+                                }
+                            } else {
+                                isTimeout = false
+                            }
+                        }
+
                         Column(
                             modifier = Modifier
                                 .height(screenHeight * 0.72f)
@@ -220,23 +235,20 @@ fun ProfileView(
                                             "ButtonClick",
                                             "Upload Profile Picture button clicked"
                                         )
-
                                         imagePickerLauncher.launch(
                                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                         )
-
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(12.dp)
                                         .height(screenHeight * 0.05f)
                                 )
-                                Row() {
+                                Row {
                                     Icon(
                                         imageVector = Icons.Default.Info,
                                         contentDescription = "info"
                                     )
-
                                     Text(
                                         text = "You cannot change the email address",
                                         fontFamily = FontFamily(Font(R.font.josefin_sans)),
@@ -245,7 +257,6 @@ fun ProfileView(
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(32.dp))
-
                                 Text(
                                     text = "Manage Skills",
                                     fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
@@ -260,20 +271,49 @@ fun ProfileView(
                                     skills = user!!.skills,
                                     skillViewModel = skillViewModel
                                 )
-
                             } else {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    CircularProgressIndicator(
-                                        color = Color.White,
-                                        strokeWidth = 4.dp
-                                    )
+                                if (isTimeout) {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Refresh,
+                                            contentDescription = "No Internet",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = "Failed to load profile data",
+                                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = "Please check your internet connection",
+                                            fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                } else {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = Color.White,
+                                            strokeWidth = 4.dp
+                                        )
+                                    }
                                 }
                             }
                         }
+
                     }
 
 
