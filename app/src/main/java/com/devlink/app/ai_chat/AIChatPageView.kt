@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,10 +53,9 @@ fun AIChatPageView(navController: NavController) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, "Gemini AI", true, navController) },
-        bottomBar = { Spacer(modifier = Modifier.height(0.dp)) } // Invisible bottom bar
+        topBar = { TopBar("Gemini AI", true, navController) },
     ) { paddingValues ->
-        Column(
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)

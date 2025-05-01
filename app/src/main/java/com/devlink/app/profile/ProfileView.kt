@@ -16,16 +16,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
@@ -104,6 +108,8 @@ fun ProfileView(
     var isUploadSuccessful by remember { mutableStateOf(false) }
     var isUploadFailed by remember { mutableStateOf(false) }
     val skillViewModel: SkillViewModel = viewModel()
+    val scrollState = rememberScrollState()
+
 
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -139,23 +145,24 @@ fun ProfileView(
 
 
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = colorResource(R.color.jet_black),
             topBar = {
                 TopBar(
-                    size = 90,
                     title = "Manage Profile",
                     showBackButton = true,
                     navController = navController
                 )
             }
         ) { innerPadding ->
-            Box(
+            Column (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+
+
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -185,7 +192,7 @@ fun ProfileView(
 
                         Column(
                             modifier = Modifier
-                                .height(screenHeight * 0.72f)
+                                .fillMaxHeight(0.9f)
                                 .width(screenWidth * 0.96f)
                                 .clip(RoundedCornerShape(32.dp))
                                 .background(color = colorResource(R.color.black_modified)),
@@ -242,7 +249,7 @@ fun ProfileView(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(12.dp)
-                                        .height(screenHeight * 0.05f)
+                                        .height(35.dp)
                                 )
                                 Row {
                                     Icon(
@@ -256,7 +263,7 @@ fun ProfileView(
                                         modifier = Modifier.padding(start = 4.dp)
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(32.dp))
+                                Spacer(modifier = Modifier.height(24.dp))
                                 Text(
                                     text = "Manage Skills",
                                     fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
@@ -385,13 +392,13 @@ fun ProfileView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(12.dp)
-                                .height(screenHeight * 0.05f)
+                                .height(50.dp)
                         )
                     }
                 }
             }
         }
-    }
+
 }
 
 
@@ -402,15 +409,8 @@ fun SkillInputField(token: String, skills: List<String>, skillViewModel: SkillVi
     var tags by remember { mutableStateOf(skills) }
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-
-//    LaunchedEffect(Unit) {
-////        val skills = viewModel.skills
-//        tags = skills
-//        skillViewModel.updateSkills(token, tags)
-//    }
-
     Column(
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier.padding(horizontal = 12.dp)
     ) {
 
         ModifiedTextField(
@@ -433,7 +433,7 @@ fun SkillInputField(token: String, skills: List<String>, skillViewModel: SkillVi
 
 
         LazyRow(
-            modifier = Modifier.padding(vertical = 20.dp),
+            modifier = Modifier.padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             items(tags) { tag ->
@@ -456,8 +456,8 @@ fun SkillInputField(token: String, skills: List<String>, skillViewModel: SkillVi
             },
             modifier = Modifier
                 .fillMaxWidth()
-//                .padding(vertical = 12.dp)
-                .height(screenHeight * 0.05f)
+                .padding(vertical = 12.dp)
+                .height(35.dp)
         )
     }
 }
@@ -466,7 +466,7 @@ fun SkillInputField(token: String, skills: List<String>, skillViewModel: SkillVi
 fun SkillItem(tag: String, onRemove: () -> Unit) {
     Row(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(2.dp)
             .background(Color.Gray.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp))
             .padding(horizontal = 8.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,

@@ -44,7 +44,7 @@ fun InterestedScreenView(navController: NavController, viewModel: InterestedIgno
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, "Interested Request Sent", true, navController) },
+        topBar = { TopBar("Interested Request Sent", true, navController) },
     ) { paddingValues ->
         Column(
             modifier = Modifier

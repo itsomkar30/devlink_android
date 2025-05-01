@@ -1,6 +1,7 @@
 package com.devlink.app.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,9 +23,9 @@ import com.devlink.app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(size: Int, title: String, showBackButton: Boolean, navController: NavController) {
+fun TopBar(title: String, showBackButton: Boolean, navController: NavController) {
     TopAppBar(
-        modifier = Modifier.height(size.dp),
+        modifier = Modifier,
         navigationIcon = {
             if (showBackButton) {
                 Icon(
@@ -32,7 +33,7 @@ fun TopBar(size: Int, title: String, showBackButton: Boolean, navController: Nav
                     contentDescription = "Back Button",
                     tint = Color.White,
                     modifier = Modifier
-                        .padding(top = 30.dp, start = 20.dp)
+                        .padding(start = 20.dp)
                         .size(25.dp)
                         .clickable {
                             navController.navigateUp()
@@ -49,7 +50,7 @@ fun TopBar(size: Int, title: String, showBackButton: Boolean, navController: Nav
                 title,
                 color = Color.White,
                 fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                modifier = Modifier.padding(top = 30.dp, start = 30.dp)
+                modifier = Modifier.padding(start = 20.dp)
             )
         },
         colors = TopAppBarColors(

@@ -62,11 +62,11 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ConnectionScreenView(navController: NavController, signinResponse: SigninResponse) {
     val connectionViewModel: ConnectionViewModel = viewModel()
-    Surface(modifier = Modifier.fillMaxSize()) {
+//    Surface(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = colorResource(R.color.jet_black),
-            topBar = { TopBar(90, "Manage Connections", true, navController) }) { paddingValues ->
+            topBar = { TopBar("Manage Connections", true, navController) }) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -75,7 +75,7 @@ fun ConnectionScreenView(navController: NavController, signinResponse: SigninRes
                 ConnectionScreen(connectionViewModel, signinResponse = signinResponse)
             }
         }
-    }
+//    }
 }
 
 @Composable

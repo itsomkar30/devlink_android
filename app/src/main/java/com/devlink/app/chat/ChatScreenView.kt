@@ -69,7 +69,7 @@ fun ChatScreenView(navController: NavController, token: String) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, "Messages", true, navController) },
+        topBar = { TopBar("Messages", true, navController) },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -230,7 +230,7 @@ fun MessageScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, targetUserName, true, navController) },
+        topBar = { TopBar(targetUserName, true, navController) },
         containerColor = colorResource(R.color.jet_black)
     ) { paddingValues ->
         Surface(

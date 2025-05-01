@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +40,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.devlink.app.R
@@ -92,7 +97,6 @@ fun CreatePostView(navController: NavController) {
 
             topBar = {
                 TopBar(
-                    size = 120,
                     title = "Create Post",
                     showBackButton = true,
                     navController = navController
@@ -116,6 +120,22 @@ fun CreatePostView(navController: NavController) {
                             fileName = R.raw.upload_post_animation,
                             size = 400.dp
                         )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Warning Icon"
+                            )
+                            Text(
+                                text = "This feature is not included in this version because it is under development.",
+                                fontFamily = FontFamily(Font(R.font.josefin_sans)),
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
                     }
 
 

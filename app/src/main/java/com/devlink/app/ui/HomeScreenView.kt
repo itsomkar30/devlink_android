@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -189,12 +190,11 @@ fun HomeScreenView(
                     .background(colorResource(R.color.black_modified)), // Black background
                 containerColor = colorResource(R.color.black_modified), // Ensure Scaffold background is black
                 topBar = {
-                    TopBar(
-                        size = 50,
-                        title = "",
-                        showBackButton = false,
-                        navController = navController
-                    )
+//                    TopBar(
+//                        title = "",
+//                        showBackButton = false,
+//                        navController = navController
+//                    )
                 },
                 bottomBar = {
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -214,7 +214,6 @@ fun HomeScreenView(
                                     userModel.id, userModel.email
                                 ), signinResponse.token
                             ),
-//                            user = TODO()
                         )
                     }
                 },
@@ -225,7 +224,7 @@ fun HomeScreenView(
                         },
                         modifier = Modifier
                             .offset(y = 50.dp)
-                            .size(screenWidth * 0.14f),
+                            .size(60.dp),
                         shape = CircleShape,
                         backgroundColor = colorResource(R.color.snap_yellow),
                         contentColor = colorResource(R.color.black)
@@ -445,23 +444,23 @@ fun DevListItem(
     Box(
         modifier = Modifier
             .padding(0.dp)
-            .height(screenHeight * 0.65f)
-            .width(screenWidth * 0.94f)
+            .fillMaxHeight(0.94f)
+            .fillMaxWidth(0.94f)
             .graphicsLayer {
                 translationX = animatedOffsetX
                 rotationZ = animatedRotation
             }
             .shadow(
-                elevation = screenWidth * 0.05f,
-                shape = RoundedCornerShape(screenWidth * 0.15f),
+                elevation = 20.dp,
+                shape = RoundedCornerShape(64.dp),
                 ambientColor = Color.Gray.copy(alpha = 0.5f),
                 spotColor = Color.Black.copy(alpha = 0.3f)
             )
-            .clip(RoundedCornerShape(screenWidth * 0.15f))
+            .clip(RoundedCornerShape(64.dp))
             .background(color = colorResource(R.color.white).copy(alpha = 1f))
             .border(
                 BorderStroke(1.dp, Color.White),
-                shape = RoundedCornerShape(screenWidth * 0.15f)
+                shape = RoundedCornerShape(64.dp)
             )
             .pointerInput(Unit) {
                 detectDragGestures(
@@ -526,14 +525,14 @@ fun DevListItem(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize(), verticalArrangement = Arrangement.Center,
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
 //                    .height(screenHeight * 0.45f)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(screenHeight * 0.45f)
+                        .fillMaxHeight(0.68f)
 //                        .background(Color.Yellow)
                 ) {
                     AsyncImage(
@@ -551,11 +550,11 @@ fun DevListItem(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 20.dp, bottom = 15.dp, start = 15.dp, end = 15.dp)
+                        .padding(top = 10.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
                         .clip(
                             RoundedCornerShape(
-                                bottomStart = screenWidth * 0.15f,
-                                bottomEnd = screenWidth * 0.15f
+                                bottomStart = 64.dp,
+                                bottomEnd = 64.dp
                             )
                         )
 //                        .background(Color.Cyan)
@@ -564,14 +563,15 @@ fun DevListItem(
                     Text(
                         text = "${item.firstname} ${item.lastname}",
                         fontFamily = FontFamily(Font(R.font.josefin_sans_bold)),
-                        fontSize = 45.sp,
+                        fontSize = 38.sp,
+                        maxLines = 1,
                         color = Color.Black
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
+                        modifier = Modifier.padding(start = 4.dp)
                     ) {
                         Text(
                             text = "Skills: ",
@@ -594,7 +594,7 @@ fun DevListItem(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(

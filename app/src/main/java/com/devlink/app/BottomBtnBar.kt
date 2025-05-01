@@ -36,7 +36,7 @@ fun BottomBtnBar(
 
     Column(
         modifier = Modifier
-            .height(55.dp)
+            .height(50.dp)
             .fillMaxSize()
             .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
             .background(colorResource(R.color.jet_black))

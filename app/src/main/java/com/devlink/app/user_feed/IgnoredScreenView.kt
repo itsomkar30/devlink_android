@@ -41,7 +41,7 @@ fun IgnoredScreenView(navController: NavController, viewModel: InterestedIgnored
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, "Ignored Request Sent", true, navController) },
+        topBar = { TopBar("Ignored Request Sent", true, navController) },
     ) { paddingValues ->
         Column(
             modifier = Modifier

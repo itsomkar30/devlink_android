@@ -2,15 +2,18 @@ package com.devlink.app.authentication
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -74,20 +77,23 @@ fun LoginView(navController: NavController = rememberNavController()) {
     val context = LocalContext.current
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
 
-    ) { paddingValues ->
+        ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(color = colorResource(R.color.black_modified))
                 .padding(paddingValues)
+                .imePadding()
         ) {
 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .zIndex(-1f)
-                    .offset(y = (-70).dp),
+                    .offset(y = (-70).dp)
+                    .background(color = colorResource(R.color.black_modified)),
                 contentAlignment = Alignment.TopCenter
 
             ) {
@@ -97,7 +103,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(cardHeight)
+                    .fillMaxHeight(0.75f)
                     .align(Alignment.BottomStart)
                     .offset(y = 50.dp),
                 shape = RoundedCornerShape(
@@ -119,6 +125,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
                     var email by rememberSaveable { mutableStateOf("") }
                     var password by rememberSaveable { mutableStateOf("") }
 
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Start connecting with Devlink",
                         fontFamily = AppFonts.josefin_bold,
@@ -128,7 +135,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     ModifiedTextField(
                         name = email,
@@ -139,10 +146,9 @@ fun LoginView(navController: NavController = rememberNavController()) {
                         isSingleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(screenHeight * 0.06f),
 
-                        )
-                    Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     ModifiedTextFieldPassword(
                         name = password, onNameChange = {
                             password = it
@@ -151,10 +157,9 @@ fun LoginView(navController: NavController = rememberNavController()) {
                         isSingleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(screenHeight * 0.06f)
                     )
 
-                    Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     ModifiedButton(
                         text = "Login",
@@ -171,7 +176,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(screenHeight * 0.06f)
+                            .height(50.dp)
                     )
 
                     Spacer(modifier = Modifier.height(screenHeight * 0.04f))
@@ -208,7 +213,7 @@ fun LoginView(navController: NavController = rememberNavController()) {
 
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxHeight()
                     .offset(y = screenHeight * -0.18f)
                     .zIndex(2f), // Ensures it's above all other elements
                 contentAlignment = Alignment.Center

@@ -39,7 +39,6 @@ fun AboutScreenView(navController: NavController) {
         backgroundColor = colorResource(R.color.jet_black),
         topBar = {
             TopBar(
-                size = 90,
                 title = "About and Source Code",
                 showBackButton = true,
                 navController = navController
@@ -52,18 +51,17 @@ fun AboutScreenView(navController: NavController) {
                 .padding(paddingValues)
         ) {
             Text(
-                text = "Created by",
+                text = "Developed by",
                 fontFamily = (FontFamily(Font(R.font.josefin_sans_bold))),
-                fontSize = 23.sp,
+                fontSize = 20.sp,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.padding(start = 16.dp)
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(175.dp)
-                    .background(colorResource(R.color.black_modified))
                     .padding(16.dp)
             ) {
 
@@ -131,7 +129,6 @@ fun AboutScreenView(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(175.dp)
-                    .background(colorResource(R.color.black_modified))
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center
             ) {
@@ -196,7 +193,7 @@ fun AboutScreenView(navController: NavController) {
             Text(
                 text = "Source Code",
                 fontFamily = (FontFamily(Font(R.font.josefin_sans_bold))),
-                fontSize = 23.sp,
+                fontSize = 20.sp,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.padding(start = 16.dp)
             )

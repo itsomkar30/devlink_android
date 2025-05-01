@@ -58,7 +58,7 @@ fun SearchScreenView(navController: NavController, token: String) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { TopBar(75, "Search Users", true, navController) },
+        topBar = { TopBar("Search Users", true, navController) },
         containerColor = colorResource(R.color.jet_black)
     ) { innerPadding ->
         Surface(
@@ -112,7 +112,7 @@ fun SearchScreenView(navController: NavController, token: String) {
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ) { 
+                    ) {
                         LottieAnimationLoop(
                             fileName = R.raw.search_screen_animation,
                             size = 300.dp
